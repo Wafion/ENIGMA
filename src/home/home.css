@@ -621,22 +621,160 @@
   animation-duration: 840ms;
 }
 
-/* The black ground falls last, uncovering the case beneath it. */
+/* -------------------------------------------------------------------------- */
+/* Full Hero Liquid ASCII Melt Transition                                      */
+/* When right-clicked, the whole hero section melts in liquid and ASCII format */
+/* -------------------------------------------------------------------------- */
+
+.home-hero__ascii-melt-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 45;
+  pointer-events: none;
+}
+
+.home-hero[data-melting='true'] .home-hero__frame,
+.home-hero[data-melting='true'] .home-hero__tagline,
+.home-hero[data-melting='true'] .home-hero__status,
+.home-hero[data-melting='true'] .home-hero__taxonomy,
+.home-hero[data-melting='true'] .home-hero__ticker,
+.home-hero[data-melting='true'] .home-hero__corner,
+.home-hero[data-melting='true'] .home-hero__plus {
+  filter: url(#hero-liquid-filter);
+  transform-origin: top center;
+  will-change: transform, filter, opacity;
+  animation: hero-liquid-drip 1220ms cubic-bezier(0.52, 0, 0.78, 0.24) forwards;
+}
+
+.home-hero[data-melting='true'] .home-hero__wordmark {
+  filter: url(#hero-liquid-filter);
+  animation: hero-liquid-drip 1200ms cubic-bezier(0.52, 0, 0.78, 0.24) forwards;
+}
+
+.home-hero[data-melting='true'] .home-badge {
+  filter: url(#hero-liquid-filter);
+  animation: hero-badge-drip 1120ms cubic-bezier(0.52, 0, 0.78, 0.24) forwards;
+}
+
+.home-hero[data-melting='true'] .home-hero__landscape {
+  filter: url(#hero-liquid-filter);
+  animation: hero-landscape-drip 1220ms cubic-bezier(0.52, 0, 0.78, 0.24) forwards;
+}
+
+@keyframes hero-liquid-drip {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+    filter: blur(0);
+  }
+  32% {
+    opacity: 0.94;
+    transform: translate3d(0, 3vh, 0) scaleY(1.1);
+    filter: blur(0.5px);
+  }
+  68% {
+    opacity: 0.58;
+    transform: translate3d(0, 22vh, 0) scaleY(1.42);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 52vh, 0) scaleY(1.85);
+    filter: blur(8px);
+  }
+}
+
+@keyframes hero-badge-drip {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translate3d(0, 0, 0) scale(1);
+  }
+  38% {
+    opacity: 0.85;
+    transform: translateX(-50%) translate3d(0, 7vh, 0) scaleY(1.22) scaleX(0.92);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translate3d(0, 56vh, 0) scaleY(1.8) scaleX(0.4);
+    filter: blur(7px);
+  }
+}
+
+@keyframes hero-landscape-drip {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+  45% {
+    opacity: 0.65;
+    transform: translate3d(0, 14vh, 0) scaleY(1.28);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 44vh, 0) scaleY(1.7);
+    filter: blur(9px);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Case Reveal Veil                                                           */
+/* Unveils Case 001 seamlessly after the hero dissolves                        */
+/* -------------------------------------------------------------------------- */
+
 .case-veil {
   position: fixed;
   inset: 0;
   z-index: 90;
   background: #080706;
   pointer-events: none;
-  animation: case-veil-lift 540ms cubic-bezier(0.6, 0, 0.86, 0.28) forwards;
+  animation: case-veil-lift 720ms cubic-bezier(0.68, 0, 0.82, 0.26) forwards;
+}
+
+.case-veil--liquid {
+  overflow: hidden;
+}
+
+.case-veil__mist {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(18, 17, 15, 0.72) 0%, rgba(8, 7, 6, 0.98) 100%);
+  opacity: 1;
+  animation: case-veil-fade 720ms ease-out forwards;
+}
+
+.case-veil__curtain {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 7, 6, 0.9) 60%, rgba(8, 7, 6, 1) 100%);
+  pointer-events: none;
 }
 
 @keyframes case-veil-lift {
-  from {
+  0% {
     transform: translate3d(0, 0, 0);
   }
-  to {
+  100% {
     transform: translate3d(0, 103%, 0);
+  }
+}
+
+@keyframes case-veil-fade {
+  0% {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+  65% {
+    opacity: 0.75;
+    backdrop-filter: blur(4px);
+  }
+  100% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
   }
 }
 

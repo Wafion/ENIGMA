@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AsciiTerrain } from './AsciiTerrain';
 import { InkWordmark } from './InkWordmark';
 import { SearchOverlay } from './SearchOverlay';
+import { HeroAsciiLiquidMelt } from './HeroAsciiLiquidMelt';
 import './home.css';
 
 const TAXONOMY = ['Folklore', 'Media History', 'Place & Memory', 'The Unexplained', 'And More…'];
@@ -37,7 +38,6 @@ function CircularBadge() {
     const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const interactive = fine.matches && !motion.matches;
-    const timers = { open: 0 };
 
     /* The anchor is a fixed layout box, so its untransformed centre is a
        stable origin for the offset — no containing-block guesswork. */
@@ -92,36 +92,6 @@ function CircularBadge() {
       badge.style.setProperty('--badge-y', '0px');
     };
 
-    const openCase = () => {
-      /* The black ground falls last, uncovering the case underneath. */
-      const veil = document.createElement('div');
-      veil.className = 'case-veil';
-      veil.setAttribute('aria-hidden', 'true');
-      document.body.appendChild(veil);
-      window.setTimeout(() => veil.remove(), 760);
-      window.history.pushState({}, '', '/case/001');
-      window.dispatchEvent(new PopStateEvent('popstate'));
-    };
-
-    /* Right-click: the hero lets go like wet ink — the wordmark drains into
-       archive fragments, everything falls away, and the case is underneath. */
-    const onContextMenu = (event: MouseEvent) => {
-      /* Touch long-press also fires contextmenu; leave that menu alone. */
-      if (!fine.matches || root.dataset.exit === 'true') return;
-      event.preventDefault();
-      hero.dataset.cursor = 'hidden';
-      if (motion.matches) {
-        openCase();
-        return;
-      }
-      measure();
-      root.dataset.exit = 'true';
-      word.dispatchEvent(new CustomEvent('ink:drain'));
-      timers.open = window.setTimeout(openCase, 1040);
-    };
-
-    hero.addEventListener('contextmenu', onContextMenu);
-
     if (interactive) {
       hero.addEventListener('pointerenter', onEnter, { passive: true });
       hero.addEventListener('pointermove', onMove, { passive: true });
@@ -132,8 +102,6 @@ function CircularBadge() {
     }
 
     return () => {
-      if (timers.open) window.clearTimeout(timers.open);
-      hero.removeEventListener('contextmenu', onContextMenu);
       hero.removeEventListener('pointerenter', onEnter);
       hero.removeEventListener('pointermove', onMove);
       hero.removeEventListener('pointerleave', onLeave);
@@ -190,10 +158,25 @@ function TickerRun({ hidden = false }: { hidden?: boolean }) {
 export function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
   const searchButtonRef = useRef<HTMLButtonElement | null>(null);
+  const heroRef = useRef<HTMLElement | null>(null);
 
   const closeSearch = useCallback(() => {
     setSearchOpen(false);
     window.setTimeout(() => searchButtonRef.current?.focus(), 0);
+  }, []);
+
+  const handleTriggerCase = useCallback(() => {
+    const veil = document.createElement('div');
+    veil.className = 'case-veil case-veil--liquid';
+    veil.setAttribute('aria-hidden', 'true');
+    veil.innerHTML = `
+      <div class="case-veil__mist"></div>
+      <div class="case-veil__curtain"></div>
+    `;
+    document.body.appendChild(veil);
+    window.setTimeout(() => veil.remove(), 900);
+    window.history.pushState({}, '', '/case/001');
+    window.dispatchEvent(new PopStateEvent('popstate'));
   }, []);
 
   useEffect(() => {
@@ -243,7 +226,8 @@ export function Home() {
       </header>
 
       <main id="main">
-        <section className="home-hero" aria-labelledby="home-title">
+        <section ref={heroRef} className="home-hero" aria-labelledby="home-title">
+          <HeroAsciiLiquidMelt heroRef={heroRef} onTriggerCase={handleTriggerCase} />
           <div className="home-hero__frame">
             <span className="home-hero__corner home-hero__corner--tl" aria-hidden="true" />
             <span className="home-hero__corner home-hero__corner--tr" aria-hidden="true" />
