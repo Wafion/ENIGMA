@@ -1,0 +1,28 @@
+/* ENIGMA Project Specific Utility Transitions */
+
+.prose-editorial p {
+  text-wrap: pretty;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.85;
+}
+
+.prose-editorial p:first-of-type {
+  margin-top: 0;
+}
+
+/* Subtle CRT phosphor pulse for Chapter 05 analysis deck */
+@keyframes phosphorPulse {
+  0%, 100% { opacity: 0.98; }
+  50% { opacity: 0.92; }
+}
+
+.phosphor-glow {
+  animation: phosphorPulse 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phosphor-glow {
+    animation: none;
+  }
+}
