@@ -79,6 +79,9 @@ export default function App() {
       }
 
       event.preventDefault();
+      if (next === CASE_PATH && current !== CASE_PATH) {
+        sessionStorage.setItem('enigma:case-ascii-open', 'true');
+      }
       window.history.pushState({}, '', `${url.pathname}${url.hash}`);
       setPath(next);
     };

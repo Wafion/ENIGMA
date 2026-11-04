@@ -166,16 +166,8 @@ export function Home() {
   }, []);
 
   const handleTriggerCase = useCallback(() => {
-    const veil = document.createElement('div');
-    veil.className = 'case-veil case-veil--liquid';
-    veil.setAttribute('aria-hidden', 'true');
-    veil.innerHTML = `
-      <div class="case-veil__mist"></div>
-      <div class="case-veil__curtain"></div>
-    `;
-    document.body.appendChild(veil);
-    window.setTimeout(() => veil.remove(), 900);
-    window.history.pushState({}, '', '/case/001');
+    sessionStorage.setItem('enigma:case-ascii-open', 'true');
+    window.history.pushState({ fromMelt: true }, '', '/case/001');
     window.dispatchEvent(new PopStateEvent('popstate'));
   }, []);
 

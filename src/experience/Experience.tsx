@@ -8,6 +8,7 @@ import {
   SourceDrawer,
 } from './components/Chrome';
 import { AssetDialog } from './components/primitives';
+import { CaseAsciiOpener } from './components/CaseAsciiOpener';
 import { Prologue } from './components/Prologue';
 import { ChapterOne } from './components/ChapterOne';
 import { ChapterTwo } from './components/ChapterTwo';
@@ -53,6 +54,7 @@ export function Experience() {
 
   return (
     <div id="top" className={`experience ${reducedMotion ? 'is-reduced-motion' : ''}`}>
+      <CaseAsciiOpener />
       <a className="skip-link" href="#main">
         Skip to the essay
       </a>
