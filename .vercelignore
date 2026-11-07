@@ -1,0 +1,19 @@
+# Vercel Deployment Ignore Rules
+.git/
+.github/
+.agents/
+.freebuff/
+.enigma-tmp/
+_backup_working_code/
+.cloud-attachments/
+dist/
+dist-ssr/
+node_modules/
+data/
+docs/
+scripts/
+R&D/
+.env
+.env.local
+.env.*
+!.env.example
