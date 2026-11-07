@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import type { TimelineEventItem } from '../../types/enigma';
 import { SourceRef } from './primitives';
+import { useExperience } from '../ExperienceContext';
 
 export function DualTimeline({ items }: { items: TimelineEventItem[] }) {
+  const { triggerSfx } = useExperience();
   const [filter, setFilter] = useState<'both' | 'lore' | 'real-history'>('both');
   const visible = useMemo(
     () => (filter === 'both' ? items : items.filter((item) => item.layer === filter)),
@@ -26,21 +28,30 @@ export function DualTimeline({ items }: { items: TimelineEventItem[] }) {
           <button
             type="button"
             className={filter === 'both' ? 'is-active' : ''}
-            onClick={() => setFilter('both')}
+            onClick={() => {
+              setFilter('both');
+              triggerSfx('sfx-typewriter');
+            }}
           >
             Both
           </button>
           <button
             type="button"
             className={filter === 'lore' ? 'is-active' : ''}
-            onClick={() => setFilter('lore')}
+            onClick={() => {
+              setFilter('lore');
+              triggerSfx('sfx-typewriter');
+            }}
           >
             Invented
           </button>
           <button
             type="button"
             className={filter === 'real-history' ? 'is-active' : ''}
-            onClick={() => setFilter('real-history')}
+            onClick={() => {
+              setFilter('real-history');
+              triggerSfx('sfx-typewriter');
+            }}
           >
             Documented
           </button>

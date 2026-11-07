@@ -19,7 +19,7 @@ export function MapPlate({
   secondaryMapAssetId,
   markers,
 }: MapPlateProps) {
-  const { inspectAsset } = useExperience();
+  const { inspectAsset, triggerSfx } = useExperience();
   const [mapId, setMapId] = useState(baseMapAssetId);
   const [selectedId, setSelectedId] = useState(markers[0]?.id ?? '');
   const [zoom, setZoom] = useState(1);
@@ -40,7 +40,10 @@ export function MapPlate({
           <button
             type="button"
             className={mapId === baseMapAssetId ? 'is-active' : ''}
-            onClick={() => setMapId(baseMapAssetId)}
+            onClick={() => {
+              setMapId(baseMapAssetId);
+              triggerSfx('sfx-paper-turn');
+            }}
           >
             1858 survey
           </button>
@@ -48,7 +51,10 @@ export function MapPlate({
             <button
               type="button"
               className={mapId === secondaryMapAssetId ? 'is-active' : ''}
-              onClick={() => setMapId(secondaryMapAssetId)}
+              onClick={() => {
+                setMapId(secondaryMapAssetId);
+                triggerSfx('sfx-paper-turn');
+              }}
             >
               1861 relief
             </button>
@@ -73,7 +79,10 @@ export function MapPlate({
                   marker.layer === 'real-production' ? 'is-production' : ''
                 }`}
                 style={{ left: `${marker.xPercent}%`, top: `${marker.yPercent}%` }}
-                onClick={() => setSelectedId(marker.id)}
+                onClick={() => {
+                  setSelectedId(marker.id);
+                  triggerSfx('sfx-camera-shutter');
+                }}
                 aria-label={`Show ${marker.label}`}
                 aria-pressed={marker.id === selectedId}
               >

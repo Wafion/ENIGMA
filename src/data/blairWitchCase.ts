@@ -523,7 +523,7 @@ export const BLAIR_WITCH_CASE: EnigmaCase = {
                   title: 'Spatial Atmosphere: The Unstable Canopy Matrix',
                   subtitle: 'Live high-density character rendering with subtle wind-driven contrast undulation and custom "Runic / Twana" symbol palette support.',
                   narrativeContext:
-                    'When viewed through low-resolution 1990s analog video or translated into a high-density ASCII character field, the leafless branches of Seneca Creek lose their botanical familiarity. Every vertical trunk and crossing bough begins to resemble the woven geometry of the humanoid stick effigies ("twana") suspended by production designer Ben Rock in the oak grove on Day 4.',
+                    'When viewed through the low-resolution lens of 1990s analog Hi8 video and grainy 16mm film, the leafless branches of Seneca Creek lose their botanical familiarity. Every vertical trunk and crossing bough begins to resemble the woven geometry of the humanoid stick effigies ("twana") suspended by production designer Ben Rock in the woods on Day 4.',
                   storytellingMode: 'unstable-forest',
                   asciiConfig: {
                     palette: 'runic-twana',

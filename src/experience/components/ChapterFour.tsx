@@ -2,7 +2,6 @@ import { useRef } from 'react';
 import { useExperience } from '../ExperienceContext';
 import { findElement, getChapter } from '../content';
 import { useWoodsCamera } from '../motion';
-import { AsciiCompare } from './AsciiCompare';
 import { AudioCue, Figure, Prose } from './primitives';
 
 export function ChapterFour() {
@@ -61,11 +60,16 @@ export function ChapterFour() {
       {ascii && (
         <section className="ascii-section" aria-labelledby="ascii-title" data-reveal>
           <header>
-            <p className="kicker">One optical comparison</p>
-            <h3 id="ascii-title">Tree line, translated</h3>
+            <p className="kicker">Production landscape · Seneca Creek</p>
+            <h3 id="ascii-title">Tree line</h3>
             <p>{ascii.narrativeContext}</p>
           </header>
-          <AsciiCompare assetId="img-seneca-creek-woods" />
+          <Figure
+            assetId="img-seneca-creek-woods"
+            className="figure--woods-compare"
+            caption="Late-October hardwood forest in Seneca Creek State Park, Maryland. The film’s forest expedition was staged in this park, where bare canopy and camera grain blurred the distinction between trees and stick effigies."
+            note="Seneca Creek State Park, Montgomery County, MD. Photograph by randomduck, CC BY-SA 2.0."
+          />
         </section>
       )}
 

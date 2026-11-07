@@ -1,19 +1,9 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { ExperienceProvider } from './experience/ExperienceContext';
 import { Experience } from './experience/Experience';
+import Case002Experience from './cases/case-002-db-cooper/Case002Experience';
 import { Home } from './home/Home';
-
-const CASE_PATH = '/case/001';
-
-const TITLES = {
-  home: 'ENIGMA — Documentary cases, traced from the record',
-  case: 'ENIGMA — The Blair Witch Incident, Case 001',
-} as const;
-
-const DESCRIPTIONS = {
-  home: 'ENIGMA is an independent documentary exhibition. Case 001, The Blair Witch Incident, traces how a modern folklore was built, sold as a record, and filmed in real Maryland woods.',
-  case: 'ENIGMA Case 001: The Blair Witch Incident. An editorial documentary in eight movements on how a folklore was built, sold as a record, and filmed in real Maryland woods.',
-} as const;
+import { resolveCase, getCaseComponent } from './core/registry/caseRegistry';
 
 function normalizePath(pathname: string) {
   const trimmed = pathname.replace(/\/+$/, '');
@@ -30,9 +20,33 @@ function setMetaDescription(content: string) {
   tag.content = content;
 }
 
+interface DynamicCaseHostProps {
+  slug: string;
+}
+
+function DynamicCaseHost({ slug }: DynamicCaseHostProps) {
+  const TargetComponent = getCaseComponent(slug);
+  if (!TargetComponent) return null;
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0a0d11] flex items-center justify-center font-mono text-xs text-[#8c4a32] uppercase tracking-widest">
+          Initializing Documentary Archive...
+        </div>
+      }
+    >
+      {React.createElement(TargetComponent, { slug })}
+    </Suspense>
+  );
+}
+
 export default function App() {
   const [path, setPath] = useState(() => normalizePath(window.location.pathname));
-  const isCase = path === CASE_PATH;
+
+  const caseMatch = path.match(/^\/case\/([^/]+)/);
+  const caseSlug = caseMatch ? caseMatch[1] : null;
+  const caseEntry = caseSlug ? resolveCase(caseSlug) : null;
+  const isCase = Boolean(caseEntry);
 
   useEffect(() => {
     const previous = window.history.scrollRestoration;
@@ -79,7 +93,7 @@ export default function App() {
       }
 
       event.preventDefault();
-      if (next === CASE_PATH && current !== CASE_PATH) {
+      if (next.startsWith('/case/') && !current.startsWith('/case/')) {
         sessionStorage.setItem('enigma:case-ascii-open', 'true');
       }
       window.history.pushState({}, '', `${url.pathname}${url.hash}`);
@@ -90,17 +104,26 @@ export default function App() {
     return () => document.removeEventListener('click', onClick);
   }, []);
 
+  // Path validity check & URL normalization
   useEffect(() => {
-    if (path !== '/' && path !== CASE_PATH) {
+    if (!isCase && path !== '/' && path !== '') {
       window.history.replaceState({}, '', '/');
+      setPath('/');
     }
-  }, [path]);
+  }, [path, isCase]);
 
+  // Page title and meta description
   useEffect(() => {
-    document.title = isCase ? TITLES.case : TITLES.home;
-    setMetaDescription(isCase ? DESCRIPTIONS.case : DESCRIPTIONS.home);
-  }, [isCase]);
+    if (isCase && caseEntry) {
+      document.title = `ENIGMA — ${caseEntry.manifest.title}, Case ${caseEntry.manifest.caseNumber}`;
+      setMetaDescription(`ENIGMA Case ${caseEntry.manifest.caseNumber}: ${caseEntry.manifest.title}. ${caseEntry.manifest.shortDescription}`);
+    } else {
+      document.title = 'ENIGMA — Documentary cases, traced from the record';
+      setMetaDescription('ENIGMA is an independent documentary exhibition. Case 001, The Blair Witch Incident, traces how a modern folklore was built, sold as a record, and filmed in real Maryland woods.');
+    }
+  }, [isCase, caseEntry]);
 
+  // Handle hash scrolling for cases
   useEffect(() => {
     if (!isCase) {
       window.scrollTo({ top: 0, behavior: 'auto' });
@@ -124,12 +147,35 @@ export default function App() {
     return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, [isCase, path]);
 
-  if (isCase) {
-    return (
-      <ExperienceProvider>
-        <Experience />
-      </ExperienceProvider>
-    );
+  if (isCase && caseSlug) {
+    const normalized = caseSlug.trim().toLowerCase();
+    // Render Case 001 (Blair Witch) directly
+    const isBlairWitch =
+      normalized === '001' ||
+      normalized === 'blair-witch' ||
+      normalized === 'case-001' ||
+      normalized === 'case-001-blair-witch';
+    if (isBlairWitch) {
+      return (
+        <ExperienceProvider>
+          <Experience />
+        </ExperienceProvider>
+      );
+    }
+
+    // Render Case 002 (D.B. Cooper) directly to guarantee zero-latency & exact DOM
+    const isDbCooper =
+      normalized === '002' ||
+      normalized === 'case-002' ||
+      normalized === 'db-cooper' ||
+      normalized === 'dbcooper' ||
+      normalized === 'cooper' ||
+      normalized === 'case-002-db-cooper';
+    if (isDbCooper) {
+      return <Case002Experience />;
+    }
+
+    return <DynamicCaseHost slug={caseSlug} />;
   }
 
   return <Home />;

@@ -1,19 +1,30 @@
 import { ArrowUpRight, Search } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { ArchiveEgg } from './ArchiveEgg';
 import { AsciiTerrain } from './AsciiTerrain';
 import { InkWordmark } from './InkWordmark';
 import { SearchOverlay } from './SearchOverlay';
 import { HeroAsciiLiquidMelt } from './HeroAsciiLiquidMelt';
+import { useHomeFx } from './homeFx';
 import './home.css';
 
 const TAXONOMY = ['Folklore', 'Media History', 'Place & Memory', 'The Unexplained', 'And More…'];
 
 const TICKER = [
   'Case 001 — The Blair Witch Incident',
-  'Prologue + seven chapters',
-  'Burkittsville, Maryland',
+  'Case 002 — The Cooper File',
+  'Flight 305, 24 November 1971',
   'Published MMXXVI',
-  'Next subject in research',
+  'Two cases open',
+];
+
+const SIGNATURE = ['E', 'N', 'I', 'G', 'M', 'A'];
+
+const FOOTER_FACES = [
+  { key: 'serif', name: 'Instrument Serif', sample: 'Aa' },
+  { key: 'body', name: 'Newsreader', sample: 'Ag' },
+  { key: 'ui', name: 'Instrument Sans', sample: 'Rg' },
+  { key: 'mono', name: 'Geist Mono', sample: '01' },
 ];
 
 const clampValue = (value: number, min: number, max: number) =>
@@ -157,13 +168,34 @@ function TickerRun({ hidden = false }: { hidden?: boolean }) {
 
 export function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [eggOpen, setEggOpen] = useState(false);
+  const [redactionOpen, setRedactionOpen] = useState(false);
+  const [yearPinned, setYearPinned] = useState(false);
   const searchButtonRef = useRef<HTMLButtonElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const issueTaps = useRef({ count: 0, at: 0 });
+
+  useHomeFx(rootRef);
 
   const closeSearch = useCallback(() => {
     setSearchOpen(false);
     window.setTimeout(() => searchButtonRef.current?.focus(), 0);
   }, []);
+
+  const closeEgg = useCallback(() => setEggOpen(false), []);
+
+  const handleIssue = () => {
+    const now = performance.now();
+    const taps = issueTaps.current;
+    taps.count = now - taps.at < 900 ? taps.count + 1 : 1;
+    taps.at = now;
+    setYearPinned((pinned) => !pinned);
+    if (taps.count >= 5) {
+      taps.count = 0;
+      setEggOpen(true);
+    }
+  };
 
   const handleTriggerCase = useCallback(() => {
     sessionStorage.setItem('enigma:case-ascii-open', 'true');
@@ -184,8 +216,36 @@ export function Home() {
     return () => document.removeEventListener('keydown', onOpenKey);
   }, [searchOpen]);
 
+  useEffect(() => {
+    if (searchOpen || eggOpen) return;
+
+    let buffer = '';
+    const onSecretKey = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        target.closest('input, textarea, select, [contenteditable="true"]')
+      ) {
+        return;
+      }
+      if (event.key.length !== 1) {
+        buffer = '';
+        return;
+      }
+      buffer = `${buffer}${event.key.toLowerCase()}`.slice(-6);
+      if (buffer === 'enigma') {
+        buffer = '';
+        setEggOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', onSecretKey);
+    return () => window.removeEventListener('keydown', onSecretKey);
+  }, [searchOpen, eggOpen]);
+
   return (
-    <div className="home">
+    <div className="home" ref={rootRef}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -196,9 +256,21 @@ export function Home() {
           <a href="/case/001">Archive</a>
         </nav>
 
-        <p className="home-masthead__issue mono" aria-hidden="true">
-          MMXXVI
-        </p>
+        <button
+          type="button"
+          className="home-masthead__issue mono"
+          data-year={yearPinned ? 'true' : 'false'}
+          aria-pressed={yearPinned}
+          aria-label={
+            yearPinned
+              ? 'Issue year: 2026. Activate to show MMXXVI.'
+              : 'Issue year: MMXXVI. Activate to show 2026.'
+          }
+          onClick={handleIssue}
+        >
+          <span aria-hidden="true">MMXXVI</span>
+          <span aria-hidden="true">2026</span>
+        </button>
 
         <nav className="home-masthead__nav home-masthead__nav--end" aria-label="Secondary">
           <a href="#method">Method</a>
@@ -280,18 +352,27 @@ export function Home() {
         </section>
 
         <section className="home-catalogue" id="catalogue" aria-labelledby="catalogue-title">
-          <div className="home-section-head">
-            <p className="home-section-index mono">01 — Catalogue</p>
+          <div className="home-section-head" data-reveal="out">
+            <p className="home-section-index mono" data-decode>
+              01 — Catalogue
+            </p>
             <h2 id="catalogue-title">Cases, in the order they were opened.</h2>
             <p className="home-section-lede">
-              One case is published. The next slot stays open until a subject and its sources can
-              carry the weight of a case.
+              Two cases are open. Each is built from primary records, reported claims and labelled
+              reconstruction — never from a legend standing in for evidence.
             </p>
           </div>
 
           <div className="home-cases">
-            <a className="home-case" href="/case/001">
-              <span className="home-case__no mono">001</span>
+            <a
+              className="home-case"
+              href="/case/001"
+              data-reveal="out"
+              data-hover-scramble=""
+            >
+              <span className="home-case__no mono" data-scramble="" aria-hidden="true">
+                001
+              </span>
 
               <span className="home-case__media">
                 <img
@@ -300,6 +381,11 @@ export function Home() {
                   loading="lazy"
                   decoding="async"
                 />
+                <span className="home-case__scan" aria-hidden="true" />
+                <span className="home-case__readout mono" aria-hidden="true">
+                  <span>Frame 001</span>
+                  <span>Seneca Creek · 39°17′N</span>
+                </span>
                 <span className="home-case__credit mono">Photo: randomduck · CC BY-SA 2.0</span>
               </span>
 
@@ -326,75 +412,137 @@ export function Home() {
               </span>
             </a>
 
-            <div className="home-case home-case--research">
-              <span className="home-case__no mono">002</span>
+            <a
+              className="home-case"
+              href="/case/002"
+              data-reveal="out"
+              data-hover-scramble=""
+            >
+              <span className="home-case__no mono" data-scramble="" aria-hidden="true">
+                002
+              </span>
 
-              <span className="home-case__media home-case__media--empty" aria-hidden="true">
-                <span className="mono">NOT YET PUBLISHED</span>
+              <span className="home-case__media">
+                <img
+                  src="/assets/db-cooper/images/northwest-727-n467us-1972.jpg"
+                  alt="Northwest Orient Boeing 727-51, registration N467US, photographed in 1972"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span className="home-case__scan" aria-hidden="true" />
+                <span className="home-case__readout mono" aria-hidden="true">
+                  <span>Frame 002</span>
+                  <span>Flight 305 · 45°57′N</span>
+                </span>
+                <span className="home-case__credit mono">
+                  Photo: Clint Groves · GFDL 1.2
+                </span>
               </span>
 
               <span className="home-case__body">
-                <span className="home-case__status home-case__status--quiet">In research</span>
-                <span className="home-case__title">Subject not yet announced</span>
+                <span className="home-case__status">
+                  <span className="home-case__status-dot" aria-hidden="true" />Now showing
+                </span>
+                <span className="home-case__title">The Cooper File</span>
                 <span className="home-case__desc">
-                  No next case is announced. This slot is reserved until a subject, a place and its
-                  sources can be verified.
+                  A ticket under a false name, a Boeing 727 into the dark, and fifty years of
+                  looking for a man who may not have survived the jump.
                 </span>
               </span>
 
               <span className="home-case__meta mono">
-                <span>Provenance review</span>
-                <span>Open</span>
+                <span>Sixteen movements</span>
+                <span>28 min</span>
+                <span>2026</span>
               </span>
 
-              <span className="home-case__enter home-case__enter--quiet" aria-hidden="true">
-                Not yet published
+              <span className="home-case__enter" aria-hidden="true">
+                Enter the case
+                <ArrowUpRight size={18} strokeWidth={1.3} />
               </span>
-            </div>
+            </a>
           </div>
         </section>
 
         <section className="home-method" id="method" aria-labelledby="method-title">
-          <div className="home-section-head home-section-head--method">
-            <p className="home-section-index mono">02 — Method</p>
+          <div className="home-method__meta mono" data-reveal="out">
+            <span data-decode>02 — Method</span>
+            <span className="home-method__meta-rule" aria-hidden="true" />
+            <span>Protocol · applied to every case</span>
+          </div>
+
+          <div className="home-method__head" data-reveal="out">
             <h2 id="method-title">We show you where the story was made.</h2>
-            <p className="home-section-lede">
+            <p className="home-method__lede">
               A myth is evidence of belief, not proof of an event. ENIGMA keeps the two in view at
               once — and labels the join.
             </p>
           </div>
 
-          <div className="home-method__grid">
-            <article className="home-principle">
-              <span className="home-principle__no mono">01</span>
-              <h3>Record, reconstruction, invention</h3>
-              <p>
-                Every image and document carries its status. A prop is never allowed to pass as an
-                archive, and a legend is never allowed to pass as fact.
-              </p>
-            </article>
-            <article className="home-principle">
-              <span className="home-principle__no mono">02</span>
-              <h3>The source stays visible</h3>
-              <p>
-                Citations open into a register of documents, photographs and licences. The limits
-                of each source are stated as plainly as its use.
-              </p>
-            </article>
-            <article className="home-principle">
-              <span className="home-principle__no mono">03</span>
-              <h3>Sound and motion are offered</h3>
-              <p>
-                Nothing plays on load. Sound waits for consent, and reduced motion replaces pinned
-                sequences with the still frame.
-              </p>
-            </article>
-          </div>
+          <ol className="home-method__ledger">
+            <li className="home-method__item" data-reveal="out" data-hover-scramble="">
+              <span className="home-method__no" aria-hidden="true" data-scramble="">
+                01
+              </span>
+              <div className="home-method__item-body">
+                <h3>Record, reconstruction, invention</h3>
+                <p>
+                  Every image and document carries its status. A prop is never allowed to pass as an
+                  archive, and a legend is never allowed to pass as fact.
+                </p>
+              </div>
+              <span className="home-method__tag mono" data-scramble="">
+                Status · labelled
+              </span>
+            </li>
+
+            <li className="home-method__item" data-reveal="out" data-hover-scramble="">
+              <span className="home-method__no" aria-hidden="true" data-scramble="">
+                02
+              </span>
+              <div className="home-method__item-body">
+                <h3>The source stays visible</h3>
+                <p>
+                  Citations open into a register of documents, photographs and licences. The limits
+                  of each source are stated as plainly as its use.
+                </p>
+              </div>
+              <span className="home-method__tag mono" data-scramble="">
+                Origin · cited
+              </span>
+            </li>
+
+            <li className="home-method__item" data-reveal="out" data-hover-scramble="">
+              <span className="home-method__no" aria-hidden="true" data-scramble="">
+                03
+              </span>
+              <div className="home-method__item-body">
+                <h3>Sound and motion are offered</h3>
+                <p>
+                  Nothing plays on load. Sound waits for consent, and reduced motion replaces
+                  pinned sequences with the still frame.
+                </p>
+              </div>
+              <span className="home-method__tag mono" data-scramble="">
+                Access · optional
+              </span>
+            </li>
+          </ol>
+
+          <p className="home-method__note mono" data-reveal="out">
+            <span>Applied in full to Case 001 — The Blair Witch Incident.</span>
+            <a href="/case/001">
+              Open the case
+              <ArrowUpRight size={12} strokeWidth={1.5} aria-hidden="true" />
+            </a>
+          </p>
         </section>
 
         <section className="home-about" id="about" aria-labelledby="about-title">
-          <div className="home-section-head home-section-head--about">
-            <p className="home-section-index mono">03 — About</p>
+          <div className="home-section-head home-section-head--about" data-reveal="out">
+            <p className="home-section-index mono" data-decode>
+              03 — About
+            </p>
             <h2 id="about-title">The stories we mistake for history.</h2>
             <p className="home-section-lede">
               ENIGMA is a documentary exhibition. Each case follows one narrative from its first
@@ -402,44 +550,134 @@ export function Home() {
             </p>
           </div>
 
-          <div className="home-about__body">
+          <div className="home-about__body" data-reveal="out">
             <p>
               A case is not a verdict. It is a reconstruction: the documents that survive, the
               people who repeated them, and the place that still carries the story. Where a source
               cannot be verified, the case says so rather than filling the gap.
             </p>
             <p>
-              Case 001, <em>The Blair Witch Incident</em>, is the only published case. The next slot
-              remains open until a subject and its sources can carry the weight of a case.
+              Case 001, <em>The Blair Witch Incident</em>, is{' '}
+              <button
+                type="button"
+                className="home-redaction"
+                data-open={redactionOpen ? 'true' : 'false'}
+                aria-expanded={redactionOpen}
+                onClick={() => setRedactionOpen((open) => !open)}
+              >
+                <span className="home-redaction__text">the only published case</span>
+                <span className="home-redaction__bar" aria-hidden="true" />
+                <span className="visually-hidden">
+                  {redactionOpen ? ' — cleared, activate to redact' : ' — redacted, activate to reveal'}
+                </span>
+              </button>
+              <span className="home-redaction__tag mono" aria-hidden="true">
+                <span>Redacted</span>
+                <span>Cleared</span>
+              </span>{' '}
+              — the next slot remains open until a subject and its sources can carry the weight of a
+              case.
             </p>
+
+            <div className="home-about__trace mono" aria-hidden="true">
+              <span className="home-about__trace-label">Record · 001</span>
+              <pre className="home-about__trace-box">
+                {`+---------------------------+
+|  [x]  source  . verified  |
+|  [ ]  claim   . unverified|
+|  [~]  gap     . kept open |
++---------------------------+`}
+              </pre>
+              <span className="home-about__trace-note">
+                Status · stopping where the record stops
+              </span>
+            </div>
           </div>
         </section>
       </main>
 
       <footer className="home-footer">
-        <div className="home-footer__top">
-          <a className="home-wordmark home-wordmark--footer" href="/" aria-label="ENIGMA, home">
-            ENIGMA
-          </a>
-          <p className="home-footer__line">
-            An independent documentary exhibition. Case 001 is open now.
-          </p>
-          <nav className="home-footer__nav" aria-label="Footer">
+        <div className="home-footer__meta mono" data-reveal="out">
+          <span data-decode>04 — End matter</span>
+          <span className="home-footer__meta-rule" aria-hidden="true" />
+          <span aria-hidden="true">Independent documentary exhibition · MMXXVI</span>
+        </div>
+
+        <div className="home-footer__grid" data-reveal="out">
+          <div className="home-footer__brand">
+            <p className="home-footer__line">
+              An independent documentary exhibition. Each case follows one story from its first
+              telling to the evidence it left behind.
+            </p>
+            <a className="home-footer__cta" href="/case/001">
+              Enter Case 001
+              <ArrowUpRight size={14} strokeWidth={1.5} aria-hidden="true" />
+            </a>
+            <p className="home-footer__status mono">
+              <span className="home-footer__status-dot" aria-hidden="true" />
+              Case 001 open · Case 002 now showing
+            </p>
+          </div>
+
+          <nav className="home-footer__col" aria-label="Footer">
+            <p className="home-footer__col-title mono">Sections</p>
             <a href="#catalogue">Cases</a>
             <a href="#method">Method</a>
             <a href="#about">About</a>
-            <a href="/case/001">
-              Case 001 <ArrowUpRight size={12} strokeWidth={1.5} aria-hidden="true" />
-            </a>
           </nav>
+
+          <div className="home-footer__col">
+            <p className="home-footer__col-title mono">Case files</p>
+            <a href="/case/001">001 — Blair Witch</a>
+            <a href="/case/002">002 — The Cooper File</a>
+          </div>
+
+          <div className="home-footer__col home-footer__col--faces">
+            <p className="home-footer__col-title mono">Colophon</p>
+            {FOOTER_FACES.map((face) => (
+              <span className="home-footer__face" data-face={face.key} key={face.name}>
+                <span className="home-footer__face-name">{face.name}</span>
+                <span className="home-footer__face-sample" aria-hidden="true">
+                  {face.sample}
+                </span>
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="home-footer__bottom mono">
-          <span>© 2026 ENIGMA · editorial project</span>
-          <span>Instrument Serif · Newsreader · Instrument Sans · Geist Mono</span>
+
+        <a
+          className="home-footer__signature"
+          href="/"
+          aria-label="ENIGMA, home"
+          data-reveal="out"
+        >
+          <span className="home-footer__sig-line" aria-hidden="true">
+            {SIGNATURE.map((letter, index) => (
+              <span
+                className="home-footer__glyph"
+                key={`${letter}-${index}`}
+                style={{ '--i': index } as CSSProperties}
+              >
+                {letter}
+              </span>
+            ))}
+          </span>
+        </a>
+
+        <div className="home-footer__bottom mono" data-reveal="out">
+          <span>© 2026 ENIGMA · Editorial project</span>
+          <span aria-hidden="true">All sources named</span>
+          <a className="home-footer__top-link" href="#home-title">
+            Back to top
+            <span className="home-footer__top-arrow" aria-hidden="true">
+              ↑
+            </span>
+          </a>
         </div>
       </footer>
 
       <SearchOverlay open={searchOpen} onClose={closeSearch} />
+      <ArchiveEgg open={eggOpen} onClose={closeEgg} />
     </div>
   );
 }

@@ -19,8 +19,23 @@ const chapterAmbience: Record<string, string> = {
   'chapter-04-the-woods': 'aud-forest-wind',
   'chapter-05-the-recordings': 'aud-tape-static',
   'chapter-06-the-real-story': 'aud-room-tone',
-  'chapter-07-what-remains': 'NONE',
+  'chapter-07-what-remains': 'aud-forest-wind',
 };
+
+const chapterScore: Record<string, string> = {
+  'prologue': 'aud-score-dread',
+  'chapter-01-the-legend': 'aud-score-investigation',
+  'chapter-02-the-town': 'aud-score-investigation',
+  'chapter-03-the-disappearance': 'aud-score-suspense',
+  'chapter-04-the-woods': 'aud-score-dread',
+  'chapter-05-the-recordings': 'aud-score-strings',
+  'chapter-06-the-real-story': 'aud-score-investigation',
+  'chapter-07-what-remains': 'aud-score-melancholy',
+};
+
+export function getScore(id: string): string {
+  return chapterScore[id] ?? 'aud-score-dread';
+}
 
 const shortTitles: Record<string, string> = {
   'chapter-01-the-legend': 'The legend',

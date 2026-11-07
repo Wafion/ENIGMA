@@ -9,7 +9,7 @@ import React, {
 import { audioManager, type AudioManagerSnapshot } from '../utils/AudioManager';
 import type { EnigmaAsset } from '../types/enigma';
 import { ASSET_MAP } from '../data/blairWitchAssets';
-import { getAmbience } from './content';
+import { getAmbience, getScore } from './content';
 
 interface ExperienceContextValue {
   audio: AudioManagerSnapshot;
@@ -17,7 +17,11 @@ interface ExperienceContextValue {
   disableAudio: () => void;
   setMuted: (muted: boolean) => void;
   setVolume: (volume: number) => void;
+  setScoreVolume: (volume: number) => void;
+  setAmbienceVolume: (volume: number) => void;
+  setSfxVolume: (volume: number) => void;
   playCue: (assetId: string) => void;
+  triggerSfx: (assetId: string) => void;
   reducedMotion: boolean;
   setReducedMotion: (value: boolean) => void;
   activeChapterId: string;
@@ -64,34 +68,47 @@ export const ExperienceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   useEffect(() => {
     if (!audio.enabled) return;
-    audioManager.enterScene(activeChapterId, getAmbience(activeChapterId));
+    audioManager.enterScene(activeChapterId, getAmbience(activeChapterId), getScore(activeChapterId));
   }, [activeChapterId, audio.enabled]);
 
   const enableAudio = useCallback(() => {
-    audioManager.enableAudio(activeChapterId, getAmbience(activeChapterId));
+    audioManager.enableAudio(activeChapterId, getAmbience(activeChapterId), getScore(activeChapterId));
   }, [activeChapterId]);
 
   const disableAudio = useCallback(() => audioManager.disableAudio(), []);
   const setMuted = useCallback((muted: boolean) => audioManager.setMuted(muted), []);
   const setVolume = useCallback((volume: number) => audioManager.setVolume(volume), []);
+  const setScoreVolume = useCallback((volume: number) => audioManager.setScoreVolume(volume), []);
+  const setAmbienceVolume = useCallback((volume: number) => audioManager.setAmbienceVolume(volume), []);
+  const setSfxVolume = useCallback((volume: number) => audioManager.setSfxVolume(volume), []);
+  
   const playCue = useCallback((assetId: string) => {
     void audioManager.triggerCue(assetId);
   }, []);
 
+  const triggerSfx = useCallback((assetId: string) => {
+    void audioManager.triggerCue(assetId, 150);
+  }, []);
+
   const inspectAsset = useCallback((assetId: string) => {
     const asset = ASSET_MAP[assetId];
-    if (asset) setInspectedAsset(asset);
+    if (asset) {
+      setInspectedAsset(asset);
+      void audioManager.triggerCue('sfx-camera-shutter', 300);
+    }
   }, []);
 
   const openSources = useCallback((code?: string) => {
     setHighlightedSource(code ?? null);
     setSourcesOpen(true);
     setIndexOpen(false);
+    void audioManager.triggerCue('sfx-paper-turn', 250);
   }, []);
 
   const closeSources = useCallback(() => {
     setSourcesOpen(false);
     setHighlightedSource(null);
+    void audioManager.triggerCue('sfx-paper-turn', 250);
   }, []);
 
   const value = useMemo<ExperienceContextValue>(
@@ -101,7 +118,11 @@ export const ExperienceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       disableAudio,
       setMuted,
       setVolume,
+      setScoreVolume,
+      setAmbienceVolume,
+      setSfxVolume,
       playCue,
+      triggerSfx,
       reducedMotion,
       setReducedMotion,
       activeChapterId,
@@ -123,8 +144,13 @@ export const ExperienceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       disableAudio,
       setMuted,
       setVolume,
+      setScoreVolume,
+      setAmbienceVolume,
+      setSfxVolume,
       playCue,
+      triggerSfx,
       reducedMotion,
+      setReducedMotion,
       activeChapterId,
       setActiveChapterId,
       inspectedAsset,
@@ -134,6 +160,7 @@ export const ExperienceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       closeSources,
       highlightedSource,
       indexOpen,
+      setIndexOpen,
     ],
   );
 

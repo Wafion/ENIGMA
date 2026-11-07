@@ -17,8 +17,7 @@ import { Dialog } from './primitives';
 /* -------------------------------------------------------------------------- */
 
 export function Masthead() {
-  const { audio } = useExperience();
-  const { activeChapterId, setIndexOpen, openSources, indexOpen } = useExperience();
+  const { audio, enableAudio, activeChapterId, setIndexOpen, openSources, indexOpen } = useExperience();
   const [progress, setProgress] = useState(0);
   const [soundOpen, setSoundOpen] = useState(false);
   const soundRef = useRef<HTMLDivElement | null>(null);
@@ -70,6 +69,15 @@ export function Masthead() {
       ? 'Sound muted'
       : 'Sound on';
 
+  const handleSoundClick = () => {
+    if (!audio.enabled) {
+      enableAudio();
+      setSoundOpen(true);
+    } else {
+      setSoundOpen((open) => !open);
+    }
+  };
+
   return (
     <header className="masthead">
       <div className="masthead__inner">
@@ -86,7 +94,7 @@ export function Masthead() {
               type="button"
               ref={soundButtonRef}
               className={`masthead__button ${audio.enabled && !audio.muted ? 'is-on' : ''}`}
-              onClick={() => setSoundOpen((open) => !open)}
+              onClick={handleSoundClick}
               aria-expanded={soundOpen}
               aria-haspopup="dialog"
             >
@@ -126,7 +134,15 @@ export function Masthead() {
 /* -------------------------------------------------------------------------- */
 
 function SoundMenu({ onClose }: { onClose: () => void }) {
-  const { audio, enableAudio, disableAudio, setMuted, setVolume } = useExperience();
+  const {
+    audio,
+    enableAudio,
+    disableAudio,
+    setMuted,
+    setVolume,
+    setScoreVolume,
+    setAmbienceVolume,
+  } = useExperience();
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -136,9 +152,9 @@ function SoundMenu({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="sound-menu" role="dialog" aria-label="Sound settings" ref={menuRef}>
-      <p className="kicker">Optional sound</p>
+      <p className="kicker">Multi-Channel Acoustic Bed</p>
       <p className="sound-menu__lede">
-        Sound design made for this essay. Nothing plays until you choose it.
+        Documentary score composed by Kai Engel &amp; Kevin MacLeod, layered over genuine Radio Aporee environmental field recordings and physical foley. Zero procedural synthesis.
       </p>
       {!audio.enabled ? (
         <button type="button" className="button button--solid sound-menu__action" onClick={enableAudio}>
@@ -159,7 +175,7 @@ function SoundMenu({ onClose }: { onClose: () => void }) {
             </button>
           </div>
           <label className="sound-menu__volume">
-            <span>Volume</span>
+            <span>Master Volume ({Math.round(audio.masterVolume * 100)}%)</span>
             <input
               type="range"
               min="0"
@@ -169,10 +185,32 @@ function SoundMenu({ onClose }: { onClose: () => void }) {
               onChange={(event) => setVolume(Number(event.target.value))}
             />
           </label>
+          <label className="sound-menu__volume">
+            <span>Score / Music Bus ({Math.round(audio.scoreVolume * 100)}%)</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={audio.scoreVolume}
+              onChange={(event) => setScoreVolume(Number(event.target.value))}
+            />
+          </label>
+          <label className="sound-menu__volume">
+            <span>Ambience &amp; SFX ({Math.round(audio.ambienceVolume * 100)}%)</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={audio.ambienceVolume}
+              onChange={(event) => setAmbienceVolume(Number(event.target.value))}
+            />
+          </label>
         </>
       )}
       <p className="sound-menu__note">
-        Audio pauses when the tab is hidden. It does not play automatically on load or on scroll.
+        Audio context runs across three isolated Web Audio buses. Pauses automatically if tab is hidden.
       </p>
       <button type="button" className="sound-menu__close" onClick={onClose}>
         Close

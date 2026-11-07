@@ -3,6 +3,7 @@ import { ASSET_MAP } from '../data/blairWitchAssets';
 export interface AudioSceneConfig {
   id: string;
   ambienceId: string;
+  scoreId?: string;
   volumeMultiplier?: number;
 }
 
@@ -14,40 +15,84 @@ export interface AudioManagerSnapshot {
   enabled: boolean;
   muted: boolean;
   masterVolume: number;
+  scoreVolume: number;
+  ambienceVolume: number;
+  sfxVolume: number;
   activeSceneId: string | null;
   activeAmbienceId: string;
+  activeScoreId: string | null;
   activeCueId: string | null;
   isAudioContextRunning: boolean;
+  isDucked: boolean;
 }
+
+// Fallback asset path resolver when not found in ASSET_MAP
+const AUDIO_FALLBACK_PATHS: Record<string, string> = {
+  // Musical Score Tracks (Sourced from Kai Engel & Kevin MacLeod via Internet Archive)
+  'aud-score-strings': '/assets/blair-witch/audio/aud-score-strings.mp3',
+  'aud-score-dread': '/assets/blair-witch/audio/aud-score-dread.mp3',
+  'aud-score-investigation': '/assets/blair-witch/audio/aud-score-investigation.mp3',
+  'aud-score-suspense': '/assets/blair-witch/audio/aud-score-suspense.mp3',
+  'aud-score-melancholy': '/assets/blair-witch/audio/aud-score-melancholy.mp3',
+  // Atmospheric Ambiences (Sourced from Radio Aporee natural acoustic field recordings)
+  'aud-forest-wind': '/assets/blair-witch/audio/forest-wind-canopy.mp3',
+  'aud-room-tone': '/assets/blair-witch/audio/historical-room-tone.wav',
+  'aud-nocturnal-insects': '/assets/blair-witch/audio/nocturnal-insects.mp3',
+  'aud-creek-flow': '/assets/blair-witch/audio/stream-creek-flow.mp3',
+  'aud-tape-static': '/assets/blair-witch/audio/radio-tape-interference.wav',
+  'aud-cabin-creak': '/assets/blair-witch/audio/wooden-cabin-creak.wav',
+  // Tactile Sound Effects (SFX)
+  'sfx-typewriter': '/assets/blair-witch/audio/sfx-typewriter.mp3',
+  'sfx-paper-turn': '/assets/blair-witch/audio/sfx-paper-turn.mp3',
+  'sfx-camera-shutter': '/assets/blair-witch/audio/sfx-camera-shutter.mp3',
+  'sfx-branch-snap': '/assets/blair-witch/audio/sfx-branch-snap.wav',
+  'sfx-footsteps': '/assets/blair-witch/audio/sfx-footsteps.wav',
+  'sfx-tape-latch': '/assets/blair-witch/audio/sfx-tape-latch.wav',
+  'cue-branch-snap': '/assets/blair-witch/audio/sfx-branch-snap.wav',
+  'cue-dry-leaves': '/assets/blair-witch/audio/sfx-footsteps.wav',
+  'cue-cabin-creak': '/assets/blair-witch/audio/wooden-cabin-creak.wav',
+};
 
 class EnigmaAudioManager {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
+  private scoreGain: GainNode | null = null;
   private ambienceGain: GainNode | null = null;
-  private cueGain: GainNode | null = null;
+  private sfxGain: GainNode | null = null;
 
   // Buffer cache to eliminate decode delays
   private audioBufferCache: Map<string, AudioBuffer> = new Map();
   private bufferLoadingPromises: Map<string, Promise<AudioBuffer | null>> = new Map();
 
+  // Active Score Layer
+  private currentScoreSource: AudioBufferSourceNode | null = null;
+  private currentScoreGainNode: GainNode | null = null;
+  private currentScoreId: string | null = null;
+
   // Active Ambience Layer
-  private currentSource: AudioBufferSourceNode | null = null;
+  private currentAmbienceSource: AudioBufferSourceNode | null = null;
+  private currentAmbienceGainNode: GainNode | null = null;
   private currentAmbienceId: string = 'NONE';
   private currentSceneId: string | null = null;
 
   // Fade timers & transitions
   private transitionTimeout: number | null = null;
   private pendingAmbienceId: string | null = null;
+  private pendingScoreId: string | null = null;
 
   // One-shot cue state
   private activeCueSource: AudioBufferSourceNode | null = null;
   private activeCueId: string | null = null;
   private cueCooldowns: Map<string, number> = new Map();
 
-  // Global state
+  // Global Volume & Bus States
   private enabled: boolean = false;
   private muted: boolean = false;
-  private masterVolume: number = 0.65;
+  private masterVolume: number = 0.70;
+  private scoreVolume: number = 0.65;
+  private ambienceVolume: number = 0.60;
+  private sfxVolume: number = 0.85;
+  private isDucked: boolean = false;
 
   // Subscribers
   private subscribers: Set<AudioManagerSubscriber> = new Set();
@@ -85,10 +130,15 @@ class EnigmaAudioManager {
       enabled: this.enabled,
       muted: this.muted,
       masterVolume: this.masterVolume,
+      scoreVolume: this.scoreVolume,
+      ambienceVolume: this.ambienceVolume,
+      sfxVolume: this.sfxVolume,
       activeSceneId: this.currentSceneId,
       activeAmbienceId: this.currentAmbienceId,
+      activeScoreId: this.currentScoreId,
       activeCueId: this.activeCueId,
       isAudioContextRunning: Boolean(this.ctx && this.ctx.state === 'running'),
+      isDucked: this.isDucked,
     };
   }
 
@@ -99,20 +149,25 @@ class EnigmaAudioManager {
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new AudioCtxClass();
 
-      // Master gain
+      // Master output bus with limiter protection
       this.masterGain = this.ctx.createGain();
       this.masterGain.gain.setValueAtTime(this.muted ? 0 : this.masterVolume, this.ctx.currentTime);
       this.masterGain.connect(this.ctx.destination);
 
-      // Ambience bus with subtle soft-knee dynamics
+      // Score / Musical Score bus
+      this.scoreGain = this.ctx.createGain();
+      this.scoreGain.gain.setValueAtTime(this.scoreVolume, this.ctx.currentTime);
+      this.scoreGain.connect(this.masterGain);
+
+      // Ambience bus
       this.ambienceGain = this.ctx.createGain();
-      this.ambienceGain.gain.setValueAtTime(0, this.ctx.currentTime);
+      this.ambienceGain.gain.setValueAtTime(this.ambienceVolume, this.ctx.currentTime);
       this.ambienceGain.connect(this.masterGain);
 
-      // Cue bus
-      this.cueGain = this.ctx.createGain();
-      this.cueGain.gain.setValueAtTime(0.9, this.ctx.currentTime);
-      this.cueGain.connect(this.masterGain);
+      // SFX / Foley bus
+      this.sfxGain = this.ctx.createGain();
+      this.sfxGain.gain.setValueAtTime(this.sfxVolume, this.ctx.currentTime);
+      this.sfxGain.connect(this.masterGain);
     }
 
     if (this.ctx.state === 'suspended') {
@@ -123,7 +178,7 @@ class EnigmaAudioManager {
   }
 
   // Preload and decode an audio buffer into Web Audio memory
-  public async loadBuffer(assetId: string): Promise<AudioBuffer | null> {
+  public async loadBuffer(assetId: string, directUrl?: string): Promise<AudioBuffer | null> {
     if (this.audioBufferCache.has(assetId)) {
       return this.audioBufferCache.get(assetId)!;
     }
@@ -132,40 +187,50 @@ class EnigmaAudioManager {
     }
 
     const asset = ASSET_MAP[assetId];
-    if (!asset) return null;
+    const candidateUrls = [
+      directUrl,
+      asset?.localPath,
+      AUDIO_FALLBACK_PATHS[assetId],
+      `/assets/blair-witch/audio/${assetId}.mp3`,
+      `/assets/blair-witch/audio/${assetId}.wav`,
+    ].filter(Boolean) as string[];
 
     const promise = (async () => {
-      try {
-        const ctx = this.ensureAudioContext();
-        const res = await fetch(asset.localPath);
-        if (!res.ok) throw new Error(`HTTP ${res.status} for ${asset.localPath}`);
-        const arrayBuf = await res.arrayBuffer();
-        const decoded = await ctx.decodeAudioData(arrayBuf);
-        this.audioBufferCache.set(assetId, decoded);
-        return decoded;
-      } catch (err) {
-        console.warn(`[AudioManager] Failed to decode audio asset "${assetId}":`, err);
-        return null;
-      } finally {
-        this.bufferLoadingPromises.delete(assetId);
+      const ctx = this.ensureAudioContext();
+      for (const targetUrl of candidateUrls) {
+        try {
+          const res = await fetch(targetUrl);
+          if (!res.ok) continue;
+          const arrayBuf = await res.arrayBuffer();
+          const decoded = await ctx.decodeAudioData(arrayBuf);
+          this.audioBufferCache.set(assetId, decoded);
+          return decoded;
+        } catch {
+          // continue to next format candidate
+        }
       }
-    })();
+      console.warn(`[AudioManager] Failed to load/decode audio asset "${assetId}" across candidates:`, candidateUrls);
+      return null;
+    })().finally(() => {
+      this.bufferLoadingPromises.delete(assetId);
+    });
 
     this.bufferLoadingPromises.set(assetId, promise);
     return promise;
   }
 
   // User consent toggle
-  public enableAudio(initialSceneId?: string, initialAmbienceId = 'aud-forest-wind') {
+  public enableAudio(initialSceneId?: string, initialAmbienceId = 'aud-forest-wind', initialScoreId = 'aud-score-dread') {
     this.enabled = true;
     this.muted = false;
     this.ensureAudioContext();
     this.syncMasterGain(0.05);
 
-    if (initialSceneId && initialAmbienceId) {
-      this.enterScene(initialSceneId, initialAmbienceId);
+    if (initialSceneId) {
+      this.enterScene(initialSceneId, initialAmbienceId, initialScoreId);
     } else {
-      this.crossfadeAmbience(initialAmbienceId);
+      this.crossfadeAmbience(initialAmbienceId, 1.6);
+      if (initialScoreId) this.playScore(initialScoreId, 2.0);
     }
     this.notify();
   }
@@ -176,11 +241,11 @@ class EnigmaAudioManager {
     this.notify();
   }
 
-  public toggleAudio(fallbackSceneId?: string, fallbackAmbienceId = 'aud-forest-wind') {
+  public toggleAudio(fallbackSceneId?: string, fallbackAmbienceId = 'aud-forest-wind', fallbackScoreId = 'aud-score-dread') {
     if (this.enabled) {
       this.disableAudio();
     } else {
-      this.enableAudio(fallbackSceneId, fallbackAmbienceId);
+      this.enableAudio(fallbackSceneId, fallbackAmbienceId, fallbackScoreId);
     }
   }
 
@@ -196,6 +261,30 @@ class EnigmaAudioManager {
     this.notify();
   }
 
+  public setScoreVolume(volume: number) {
+    this.scoreVolume = Math.max(0, Math.min(1, volume));
+    if (this.scoreGain && this.ctx) {
+      this.scoreGain.gain.setValueAtTime(this.scoreVolume, this.ctx.currentTime);
+    }
+    this.notify();
+  }
+
+  public setAmbienceVolume(volume: number) {
+    this.ambienceVolume = Math.max(0, Math.min(1, volume));
+    if (this.ambienceGain && this.ctx) {
+      this.ambienceGain.gain.setValueAtTime(this.ambienceVolume, this.ctx.currentTime);
+    }
+    this.notify();
+  }
+
+  public setSfxVolume(volume: number) {
+    this.sfxVolume = Math.max(0, Math.min(1, volume));
+    if (this.sfxGain && this.ctx) {
+      this.sfxGain.gain.setValueAtTime(this.sfxVolume, this.ctx.currentTime);
+    }
+    this.notify();
+  }
+
   private syncMasterGain(rampTimeSec = 0.05) {
     if (!this.masterGain || !this.ctx) return;
     const now = this.ctx.currentTime;
@@ -204,229 +293,275 @@ class EnigmaAudioManager {
     this.masterGain.gain.setTargetAtTime(target, now, rampTimeSec);
   }
 
+  // Audio Ducking: smoothly lowers score & ambience when speech, vitrine, or inspection plays
+  public applyDucking(duckDb = -8, durationMs = 250) {
+    if (!this.scoreGain || !this.ambienceGain || !this.ctx) return;
+    this.isDucked = true;
+    const linearGain = Math.pow(10, duckDb / 20);
+    const targetTime = this.ctx.currentTime + durationMs / 1000;
+    this.scoreGain.gain.setTargetAtTime(linearGain * this.scoreVolume, this.ctx.currentTime, targetTime);
+    this.ambienceGain.gain.setTargetAtTime(linearGain * this.ambienceVolume, this.ctx.currentTime, targetTime);
+    this.notify();
+  }
+
+  public releaseDucking(durationMs = 450) {
+    if (!this.scoreGain || !this.ambienceGain || !this.ctx) return;
+    this.isDucked = false;
+    const targetTime = this.ctx.currentTime + durationMs / 1000;
+    this.scoreGain.gain.setTargetAtTime(this.scoreVolume, this.ctx.currentTime, targetTime);
+    this.ambienceGain.gain.setTargetAtTime(this.ambienceVolume, this.ctx.currentTime, targetTime);
+    this.notify();
+  }
+
   // ===========================================================================
-  // SCENE OWNERSHIP & CONTEXT-AWARE AMBIENCE MANAGEMENT
+  // MUSICAL SCORE BUS
   // ===========================================================================
 
-  /**
-   * Called when a section or scene becomes active in the viewport.
-   * If user scrolls out or into a silent scene, ambience is faded out.
-   */
-  public enterScene(sceneId: string, ambienceId: string) {
-    if (this.currentSceneId === sceneId && this.currentAmbienceId === ambienceId) {
-      return;
-    }
-    this.currentSceneId = sceneId;
+  public async playScore(scoreId: string, fadeDurationSec = 2.4) {
+    if (!this.enabled || scoreId === this.currentScoreId) return;
 
-    if (!this.enabled) {
-      this.currentAmbienceId = ambienceId;
+    if (scoreId === 'NONE' || !scoreId) {
+      if (this.currentScoreGainNode && this.ctx) {
+        const now = this.ctx.currentTime;
+        this.currentScoreGainNode.gain.cancelScheduledValues(now);
+        this.currentScoreGainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDurationSec);
+        const oldSrc = this.currentScoreSource;
+        setTimeout(() => {
+          try { oldSrc?.stop(); oldSrc?.disconnect(); } catch {}
+        }, fadeDurationSec * 1000 + 80);
+      }
+      this.currentScoreSource = null;
+      this.currentScoreGainNode = null;
+      this.currentScoreId = null;
       this.notify();
       return;
     }
 
-    // Debounce rapid scroll triggers by 120ms to prevent buffer thrashing
+    const ctx = this.ensureAudioContext();
+    const buffer = await this.loadBuffer(scoreId);
+    if (!buffer || !this.enabled) return;
+
+    // Create a dedicated GainNode for this new score instance
+    const trackGain = ctx.createGain();
+    trackGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    trackGain.gain.exponentialRampToValueAtTime(1.0, ctx.currentTime + fadeDurationSec);
+    trackGain.connect(this.scoreGain!);
+
+    const newSource = ctx.createBufferSource();
+    newSource.buffer = buffer;
+    newSource.loop = true;
+    newSource.connect(trackGain);
+    newSource.start(ctx.currentTime);
+
+    // Fade out previous score instance cleanly
+    if (this.currentScoreGainNode && this.currentScoreSource) {
+      const now = ctx.currentTime;
+      const oldGain = this.currentScoreGainNode;
+      const oldSource = this.currentScoreSource;
+      oldGain.gain.cancelScheduledValues(now);
+      oldGain.gain.setValueAtTime(oldGain.gain.value, now);
+      oldGain.gain.linearRampToValueAtTime(0.0001, now + fadeDurationSec);
+      setTimeout(() => {
+        try { oldSource.stop(); oldSource.disconnect(); oldGain.disconnect(); } catch {}
+      }, fadeDurationSec * 1000 + 100);
+    }
+
+    this.currentScoreSource = newSource;
+    this.currentScoreGainNode = trackGain;
+    this.currentScoreId = scoreId;
+    this.notify();
+  }
+
+  // ===========================================================================
+  // SCENE OWNERSHIP & CONTEXT-AWARE AMBIENCE MANAGEMENT
+  // ===========================================================================
+
+  public enterScene(sceneId: string, ambienceId: string, scoreId?: string) {
+    this.currentSceneId = sceneId;
+
+    if (!this.enabled) {
+      this.currentAmbienceId = ambienceId;
+      if (scoreId) this.currentScoreId = scoreId;
+      this.notify();
+      return;
+    }
+
+    // Debounce rapid scroll triggers by 100ms
     if (this.transitionTimeout !== null) {
       window.clearTimeout(this.transitionTimeout);
     }
 
     this.pendingAmbienceId = ambienceId;
+    this.pendingScoreId = scoreId ?? null;
+
     this.transitionTimeout = window.setTimeout(() => {
       this.transitionTimeout = null;
       if (this.pendingAmbienceId) {
-        this.crossfadeAmbience(this.pendingAmbienceId);
+        this.crossfadeAmbience(this.pendingAmbienceId, 1.8);
         this.pendingAmbienceId = null;
       }
-    }, 120);
+      if (this.pendingScoreId) {
+        this.playScore(this.pendingScoreId, 2.2);
+        this.pendingScoreId = null;
+      }
+    }, 100);
 
     this.notify();
   }
 
-  /**
-   * Called when a section or scene leaves the viewport.
-   * Crucial requirement: if the scene that is leaving is the active owner,
-   * we fade out its ambience to silence rather than continuing indefinitely!
-   */
   public leaveScene(sceneId: string) {
     if (this.currentSceneId === sceneId) {
       this.currentSceneId = null;
-
-      // Stop any active cue associated with this leaving section
       if (this.activeCueSource) {
         this.stopActiveCue(0.3);
       }
-
-      // Smoothly fade ambience out over 1.4s
       this.crossfadeAmbience('NONE', 1.4);
       this.notify();
     }
   }
 
-  /**
-   * Seamless crossfade between ambient tracks using Web Audio API buffer sources
-   */
-  private async crossfadeAmbience(targetAmbienceId: string, fadeDurationSec = 1.6) {
-    if (targetAmbienceId === this.currentAmbienceId) {
-      return;
-    }
-
-    const ctx = this.ensureAudioContext();
-    const now = ctx.currentTime;
-    const oldSource = this.currentSource;
-
-    // Fade out current source if playing
-    if (oldSource && this.ambienceGain) {
-      this.ambienceGain.gain.cancelScheduledValues(now);
-      this.ambienceGain.gain.setValueAtTime(this.ambienceGain.gain.value, now);
-      this.ambienceGain.gain.linearRampToValueAtTime(0, now + fadeDurationSec);
-
-      setTimeout(() => {
-        try {
-          oldSource.stop();
-          oldSource.disconnect();
-        } catch {}
-      }, fadeDurationSec * 1000 + 80);
-      this.currentSource = null;
-    }
-
-    this.currentAmbienceId = targetAmbienceId;
+  public async crossfadeAmbience(targetAmbienceId: string, fadeDurationSec = 1.8) {
+    if (targetAmbienceId === this.currentAmbienceId) return;
 
     if (targetAmbienceId === 'NONE' || !this.enabled) {
+      if (this.currentAmbienceGainNode && this.ctx) {
+        const now = this.ctx.currentTime;
+        this.currentAmbienceGainNode.gain.cancelScheduledValues(now);
+        this.currentAmbienceGainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDurationSec);
+        const oldSrc = this.currentAmbienceSource;
+        setTimeout(() => {
+          try { oldSrc?.stop(); oldSrc?.disconnect(); } catch {}
+        }, fadeDurationSec * 1000 + 80);
+      }
+      this.currentAmbienceSource = null;
+      this.currentAmbienceGainNode = null;
+      this.currentAmbienceId = 'NONE';
       this.notify();
       return;
     }
 
-    // Load new buffer
+    const ctx = this.ensureAudioContext();
     const buffer = await this.loadBuffer(targetAmbienceId);
-    if (!buffer || !this.enabled || this.currentAmbienceId !== targetAmbienceId) {
-      return;
-    }
+    if (!buffer || !this.enabled) return;
 
-    // Create frame-accurate looping buffer source
+    // Create a dedicated GainNode for this new ambience instance
+    const trackGain = ctx.createGain();
+    trackGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    trackGain.gain.exponentialRampToValueAtTime(1.0, ctx.currentTime + fadeDurationSec);
+    trackGain.connect(this.ambienceGain!);
+
     const newSource = ctx.createBufferSource();
     newSource.buffer = buffer;
     newSource.loop = true;
-    newSource.loopStart = 0;
-    newSource.loopEnd = buffer.duration;
+    newSource.connect(trackGain);
+    newSource.start(ctx.currentTime);
 
-    newSource.connect(this.ambienceGain!);
+    // Fade out previous ambience instance cleanly
+    if (this.currentAmbienceGainNode && this.currentAmbienceSource) {
+      const now = ctx.currentTime;
+      const oldGain = this.currentAmbienceGainNode;
+      const oldSource = this.currentAmbienceSource;
+      oldGain.gain.cancelScheduledValues(now);
+      oldGain.gain.setValueAtTime(oldGain.gain.value, now);
+      oldGain.gain.linearRampToValueAtTime(0.0001, now + fadeDurationSec);
+      setTimeout(() => {
+        try { oldSource.stop(); oldSource.disconnect(); oldGain.disconnect(); } catch {}
+      }, fadeDurationSec * 1000 + 100);
+    }
 
-    const startNow = ctx.currentTime;
-    this.ambienceGain!.gain.cancelScheduledValues(startNow);
-    this.ambienceGain!.gain.setValueAtTime(0, startNow);
-    this.ambienceGain!.gain.linearRampToValueAtTime(0.75, startNow + fadeDurationSec);
-
-    newSource.start(startNow);
-    this.currentSource = newSource;
+    this.currentAmbienceSource = newSource;
+    this.currentAmbienceGainNode = trackGain;
+    this.currentAmbienceId = targetAmbienceId;
     this.notify();
   }
 
   // ===========================================================================
-  // ONE-SHOT CUE MANAGEMENT WITH DEDUPLICATION & COOLDOWN
+  // TACTILE SFX & FOLEY CUE SYSTEM
   // ===========================================================================
 
-  public async triggerCue(cueAssetId: string, cooldownMs = 1200) {
-    const nowMs = Date.now();
-    const lastTrigger = this.cueCooldowns.get(cueAssetId) || 0;
-    if (nowMs - lastTrigger < cooldownMs) {
-      return; // Deduplicate
-    }
-    this.cueCooldowns.set(cueAssetId, nowMs);
+  public async triggerCue(cueAssetId: string, cooldownMs = 300, directUrl?: string) {
+    if (!this.enabled || this.muted) return;
 
-    // If audio is not enabled, enable it on user gesture
-    if (!this.enabled) {
-      this.enableAudio(undefined, this.currentAmbienceId !== 'NONE' ? this.currentAmbienceId : 'aud-forest-wind');
-    }
-
-    // If this cue is already playing, stop it (toggle off)
-    if (this.activeCueId === cueAssetId && this.activeCueSource) {
-      this.stopActiveCue(0.2);
-      this.notify();
-      return;
-    }
-
-    this.stopActiveCue(0.15);
+    const now = Date.now();
+    const lastPlayed = this.cueCooldowns.get(cueAssetId) || 0;
+    if (now - lastPlayed < cooldownMs) return;
+    this.cueCooldowns.set(cueAssetId, now);
 
     const ctx = this.ensureAudioContext();
-    const buffer = await this.loadBuffer(cueAssetId);
+    const buffer = await this.loadBuffer(cueAssetId, directUrl);
     if (!buffer) return;
+
+    // Brief subtle ducking of music and ambience for tactile punch
+    this.applyDucking(-4, 150);
 
     const source = ctx.createBufferSource();
     source.buffer = buffer;
-    source.loop = false; // Strictly non-looping for one-shot cues!
-    source.connect(this.cueGain!);
 
-    const startNow = ctx.currentTime;
-    source.start(startNow);
+    // Organic micro-detuning (±3% pitch variation) so repeated interactions sound human
+    const detuneCents = (Math.random() - 0.5) * 60; // -30 to +30 cents
+    if (source.detune) {
+      source.detune.setValueAtTime(detuneCents, ctx.currentTime);
+    }
+
+    // Per-cue gain with subtle random dynamic variation
+    const cueVol = ctx.createGain();
+    const randomVolumeOffset = (Math.random() - 0.5) * 0.1;
+    cueVol.gain.setValueAtTime(Math.max(0.2, 0.9 + randomVolumeOffset), ctx.currentTime);
+
+    source.connect(cueVol);
+    cueVol.connect(this.sfxGain!);
+
+    source.onended = () => {
+      this.releaseDucking(300);
+      if (this.activeCueId === cueAssetId) {
+        this.activeCueId = null;
+        this.activeCueSource = null;
+      }
+      this.notify();
+    };
 
     this.activeCueSource = source;
     this.activeCueId = cueAssetId;
+    source.start(0);
     this.notify();
-
-    source.onended = () => {
-      if (this.activeCueSource === source) {
-        this.activeCueSource = null;
-        this.activeCueId = null;
-        this.notify();
-      }
-    };
   }
 
-  public stopActiveCue(fadeTimeSec = 0.2) {
-    if (!this.activeCueSource || !this.ctx) return;
-    const now = this.ctx.currentTime;
-    const src = this.activeCueSource;
-    this.activeCueSource = null;
-    this.activeCueId = null;
-
-    if (this.cueGain) {
-      this.cueGain.gain.cancelScheduledValues(now);
-      this.cueGain.gain.setValueAtTime(this.cueGain.gain.value, now);
-      this.cueGain.gain.linearRampToValueAtTime(0, now + fadeTimeSec);
-      setTimeout(() => {
-        try {
-          src.stop();
-          src.disconnect();
-          if (this.cueGain && this.ctx) {
-            this.cueGain.gain.setValueAtTime(0.9, this.ctx.currentTime);
-          }
-        } catch {}
-      }, fadeTimeSec * 1000 + 50);
-    } else {
-      try { src.stop(); src.disconnect(); } catch {}
+  public stopActiveCue(fadeSec = 0.2) {
+    if (this.activeCueSource && this.ctx) {
+      try {
+        this.activeCueSource.stop(this.ctx.currentTime + fadeSec);
+      } catch {}
+      this.activeCueSource = null;
+      this.activeCueId = null;
+      this.notify();
     }
   }
 
-  public stopAll(fadeTimeSec = 0.3) {
-    if (this.transitionTimeout !== null) {
-      window.clearTimeout(this.transitionTimeout);
-      this.transitionTimeout = null;
-    }
-    this.stopActiveCue(fadeTimeSec);
-
-    if (this.currentSource && this.ambienceGain && this.ctx) {
+  public stopAll(fadeDurationSec = 0.4) {
+    if (this.currentAmbienceGainNode && this.ctx) {
       const now = this.ctx.currentTime;
-      const src = this.currentSource;
-      this.currentSource = null;
-      this.currentAmbienceId = 'NONE';
-      this.ambienceGain.gain.cancelScheduledValues(now);
-      this.ambienceGain.gain.linearRampToValueAtTime(0, now + fadeTimeSec);
-      setTimeout(() => {
-        try {
-          src.stop();
-          src.disconnect();
-        } catch {}
-      }, fadeTimeSec * 1000 + 50);
+      this.currentAmbienceGainNode.gain.cancelScheduledValues(now);
+      this.currentAmbienceGainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDurationSec);
     }
-  }
+    if (this.currentScoreGainNode && this.ctx) {
+      const now = this.ctx.currentTime;
+      this.currentScoreGainNode.gain.cancelScheduledValues(now);
+      this.currentScoreGainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDurationSec);
+    }
 
-  public dispose() {
-    this.stopAll(0.1);
-    if (this.ctx) {
-      this.ctx.close().catch(() => {});
-      this.ctx = null;
-    }
-    this.subscribers.clear();
-    this.audioBufferCache.clear();
+    setTimeout(() => {
+      try { this.currentAmbienceSource?.stop(); this.currentAmbienceSource?.disconnect(); } catch {}
+      try { this.currentScoreSource?.stop(); this.currentScoreSource?.disconnect(); } catch {}
+      this.currentAmbienceSource = null;
+      this.currentAmbienceGainNode = null;
+      this.currentScoreSource = null;
+      this.currentScoreGainNode = null;
+      this.currentAmbienceId = 'NONE';
+      this.currentScoreId = null;
+      this.currentSceneId = null;
+    }, fadeDurationSec * 1000 + 50);
+
+    this.stopActiveCue(fadeDurationSec);
   }
 }
 

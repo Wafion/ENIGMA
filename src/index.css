@@ -4,6 +4,12 @@
 @import "@fontsource-variable/newsreader";
 @import "@fontsource-variable/instrument-sans";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource/anton/400.css";
+@import "@fontsource-variable/oswald";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/400-italic.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource-variable/newsreader/wght-italic.css";
 
 /* -------------------------------------------------------------------------- */
 /* Threshold — tokens                                                          */
@@ -14,6 +20,9 @@
   --font-body: 'Newsreader Variable', 'Newsreader', Georgia, Cambria, serif;
   --font-ui: 'Instrument Sans Variable', 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-condensed: 'Oswald Variable', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  --font-archive: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-poster: 'Anton', 'Arial Narrow', Impact, sans-serif;
 
   --night-field: #12110f;
   --canopy: #1a1f18;
@@ -1776,125 +1785,8 @@ cite {
   color: var(--bone-dim);
 }
 
-.ascii-compare {
+.figure--woods-compare {
   margin-top: clamp(2rem, 4vw, 3rem);
-}
-
-.ascii-compare__stage {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  overflow: hidden;
-  background: #0b0d0a;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-  user-select: none;
-}
-
-.ascii-compare__stage > img,
-.ascii-compare__canvas,
-.ascii-compare__canvas canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.ascii-compare__stage > img {
-  object-fit: cover;
-  filter: saturate(0.68) contrast(1.04) brightness(0.86);
-}
-
-.ascii-compare__canvas canvas {
-  object-fit: cover;
-}
-
-.ascii-compare__divider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(239, 232, 220, 0.9);
-  pointer-events: none;
-}
-
-.ascii-compare__divider > span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2.1rem;
-  height: 2.1rem;
-  border: 1px solid rgba(239, 232, 220, 0.9);
-  border-radius: 50%;
-  background: rgba(15, 16, 13, 0.55);
-  transform: translate(-50%, -50%);
-}
-
-.ascii-compare__divider > span::before,
-.ascii-compare__divider > span::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 0.35rem;
-  height: 0.35rem;
-  border-top: 1px solid var(--bone);
-  border-left: 1px solid var(--bone);
-}
-
-.ascii-compare__divider > span::before {
-  left: 0.5rem;
-  transform: translateY(-50%) rotate(-45deg);
-}
-
-.ascii-compare__divider > span::after {
-  right: 0.5rem;
-  transform: translateY(-50%) rotate(135deg);
-}
-
-.ascii-compare__tag {
-  position: absolute;
-  top: 0.8rem;
-  padding: 0.3rem 0.5rem;
-  background: rgba(13, 14, 11, 0.74);
-  color: var(--bone-dim);
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.03em;
-}
-
-.ascii-compare__tag--left {
-  left: 0.8rem;
-}
-
-.ascii-compare__tag--right {
-  right: 0.8rem;
-}
-
-.ascii-compare__controls {
-  display: grid;
-  gap: 1rem;
-  padding-top: 1rem;
-}
-
-.ascii-compare__controls label {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.8rem;
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  color: var(--mist);
-}
-
-.ascii-compare__controls input[type='range'] {
-  width: 100%;
-  accent-color: var(--brass);
-}
-
-.ascii-compare__controls > p {
-  max-width: 62ch;
-  font-family: var(--font-ui);
-  font-size: 0.76rem;
-  line-height: 1.55;
-  color: var(--mist);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -4095,12 +3987,6 @@ cite {
     grid-column: 3;
     grid-row: 1;
     align-self: center;
-  }
-
-  .ascii-compare__controls {
-    grid-template-columns: minmax(16rem, 0.9fr) minmax(0, 1.1fr);
-    align-items: center;
-    gap: 2rem;
   }
 
   .woods-camera {

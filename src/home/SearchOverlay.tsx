@@ -103,8 +103,20 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
   useEffect(() => {
     if (!open) return;
-    const timer = window.setTimeout(() => inputRef.current?.focus(), 40);
-    return () => window.clearTimeout(timer);
+
+    const timers: number[] = [];
+    const focusInput = (attempt: number) => {
+      inputRef.current?.focus();
+      if (document.activeElement !== inputRef.current && attempt < 3) {
+        timers.push(window.setTimeout(() => focusInput(attempt + 1), 160));
+      }
+    };
+    const frame = window.requestAnimationFrame(() => focusInput(0));
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
   }, [open]);
 
   useEffect(() => {
