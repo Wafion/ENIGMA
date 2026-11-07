@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1040" width="800" height="1040">
+  <defs>
+    <filter id="paper-grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise"/>
+      <feDiffuseLighting in="noise" lighting-color="#d8ccb8" surfaceScale="1.4" result="paper">
+        <feDistantLight azimuth="45" elevation="62"/>
+      </feDiffuseLighting>
+      <feComposite in="SourceGraphic" in2="paper" operator="multiply"/>
+    </filter>
+  </defs>
+  <rect width="800" height="1040" fill="#cbbda4"/>
+  <rect x="34" y="34" width="732" height="972" fill="none" stroke="#2c241b" stroke-width="3"/>
+  <rect x="42" y="42" width="716" height="956" fill="none" stroke="#2c241b" stroke-width="1"/>
+  <!-- Top Epistemic Classification Stamp -->
+  <g transform="translate(480, 62) rotate(-3)">
+    <rect x="0" y="0" width="258" height="44" fill="none" stroke="#8f241b" stroke-width="2.5"/>
+    <text x="129" y="19" font-family="monospace" font-size="10" font-weight="bold" fill="#8f241b" text-anchor="middle" letter-spacing="1.5">RECONSTRUCTED FICTIONAL PLATE</text>
+    <text x="129" y="34" font-family="monospace" font-size="9" fill="#8f241b" text-anchor="middle" letter-spacing="1">IN-UNIVERSE LORE // HAXAN (1999)</text>
+  </g>
+  <text x="400" y="118" font-family="Georgia, serif" font-size="14" fill="#2c241b" text-anchor="middle" letter-spacing="6">CHAPBOOK FOLIO IX. — ANNO DOMINI MDCCCIX</text>
+  <text x="400" y="168" font-family="Georgia, serif" font-size="38" font-weight="bold" fill="#1b1610" text-anchor="middle" letter-spacing="4">THE BLAIR WITCH CULT</text>
+  <text x="400" y="200" font-family="Georgia, serif" font-size="15" font-style="italic" fill="#3a3024" text-anchor="middle">Being an Account of the Accusation &amp; Winter Banishment of Elly Kedward in the Township of Blair, 1785</text>
+  <line x1="120" y1="222" x2="680" y2="222" stroke="#2c241b" stroke-width="1.5"/>
+  <!-- Woodcut Illustration Frame -->
+  <g transform="translate(130, 248)">
+    <rect width="540" height="420" fill="#181410" stroke="#2c241b" stroke-width="4"/>
+    <!-- Woodcut engraved sky hatching -->
+    <g stroke="#cbbda4" stroke-width="1" opacity="0.35">
+      <line x1="0" y1="20" x2="540" y2="20"/><line x1="0" y1="32" x2="540" y2="32"/><line x1="0" y1="44" x2="540" y2="44"/>
+      <line x1="0" y1="56" x2="540" y2="56"/><line x1="0" y1="68" x2="540" y2="68"/><line x1="0" y1="80" x2="540" y2="80"/>
+    </g>
+    <!-- Bare winter black hills trees -->
+    <g stroke="#cbbda4" stroke-width="3" fill="none">
+      <path d="M70,420 L70,120 M70,210 L30,150 M70,180 L115,130"/>
+      <path d="M155,420 L155,90 M155,190 L110,120 M155,160 L205,105"/>
+      <path d="M390,420 L390,85 M390,175 L340,115 M390,150 L440,95"/>
+      <path d="M475,420 L475,110 M475,205 L430,145 M475,180 L515,130"/>
+    </g>
+    <!-- Stick Effigy (Twana) Geometry in Center -->
+    <g transform="translate(270, 215)" stroke="#d8ccb8" stroke-width="4.5" stroke-linecap="round">
+      <line x1="0" y1="-95" x2="0" y2="95"/>
+      <line x1="-75" y1="-35" x2="75" y2="-35"/>
+      <line x1="-55" y1="-35" x2="0" y2="30"/>
+      <line x1="55" y1="-35" x2="0" y2="30"/>
+      <line x1="0" y1="30" x2="-48" y2="95"/>
+      <line x1="0" y1="30" x2="48" y2="95"/>
+      <circle cx="0" cy="-35" r="9" fill="#181410" stroke="#8f241b" stroke-width="3"/>
+    </g>
+    <text x="270" y="396" font-family="Georgia, serif" font-size="13" fill="#cbbda4" text-anchor="middle" letter-spacing="3">FIG. III — THE TIMBER EFFIGY OF THE BLACK HILLS</text>
+  </g>
+  <!-- Typographic Columns -->
+  <g font-family="Georgia, serif" font-size="13.5" fill="#231c15">
+    <text x="130" y="710">"In the Month of February, 1785, after diverse Children of the Settlement</text>
+    <text x="130" y="732">testified that the Woman Kedward had drawn forth Blood from their Arms</text>
+    <text x="130" y="754">within her Cottage near the Creek, the Magistrates ordered her bound</text>
+    <text x="130" y="776">upon a Sled and cast into the North Woods amidst a great Snow. Yet by the</text>
+    <text x="130" y="798">Turning of the following Winter, every Child who had spoken her Name—and</text>
+    <text x="130" y="820">half the Youth of Blair beside—had vanished into the Timber without</text>
+    <text x="130" y="842">Footprint or Cry, whereupon the Town was forsaken."</text>
+  </g>
+  <line x1="130" y1="875" x2="670" y2="875" stroke="#2c241b" stroke-width="1"/>
+  <text x="130" y="905" font-family="monospace" font-size="11" fill="#4a3e31">DOCUMENT PROVENANCE: Reconstructed Archival Prop (Non-Historical)</text>
+  <text x="130" y="925" font-family="monospace" font-size="11" fill="#4a3e31">CONTEXT: Invented by Daniel Myrick, Eduardo Sánchez &amp; Ben Rock (1998–1999) to</text>
+  <text x="130" y="945" font-family="monospace" font-size="11" fill="#4a3e31">anchor the fictional 200-year mythology in "Curse of the Blair Witch".</text>
+</svg>

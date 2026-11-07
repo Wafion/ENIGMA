@@ -1,0 +1,846 @@
+/* ==========================================================================
+   Motion layer — authored scenes, not a global reveal preset.
+   This file only adds motion-specific layout. It does not change the edition's
+   palette, type or compositions.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Shared
+   -------------------------------------------------------------------------- */
+
+.ed-head__title,
+.ed-statement,
+.ed-cover__title {
+  will-change: clip-path, transform;
+}
+
+.ed-cover__figure img,
+.ed-money__scan img,
+.ed-search__aerial img,
+.ed-remains__vane img,
+.ed-flight__crew img {
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   01 · The Man — viewfinder
+   -------------------------------------------------------------------------- */
+
+.ed-man__plate {
+  isolation: isolate;
+}
+
+.ed-man__finder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  display: none;
+  border: 1px solid rgba(214, 49, 24, 0.82);
+  pointer-events: none;
+  visibility: hidden;
+  will-change: transform, width, height, opacity;
+}
+
+.ed-man__finder::before,
+.ed-man__finder::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--red);
+}
+
+.ed-man__finder::before {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.ed-man__finder::after {
+  right: -1px;
+  bottom: -1px;
+  border-top: 0;
+  border-left: 0;
+}
+
+.ed-man__finder-label {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: -1px;
+  padding: 3px 6px 2px;
+  background: var(--red);
+  color: var(--paper);
+  font-family: var(--f-mono);
+  font-size: 7.5px;
+  font-style: normal;
+  letter-spacing: 0.09em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ed-man__finder i {
+  position: absolute;
+  display: block;
+  background: rgba(214, 49, 24, 0.7);
+}
+
+.ed-man__finder i:nth-of-type(1),
+.ed-man__finder i:nth-of-type(3) {
+  width: 1px;
+  height: 8px;
+  top: 50%;
+  margin-top: -4px;
+}
+
+.ed-man__finder i:nth-of-type(1) { left: -5px; }
+.ed-man__finder i:nth-of-type(3) { right: -5px; }
+
+.ed-man__finder i:nth-of-type(2),
+.ed-man__finder i:nth-of-type(4) {
+  height: 1px;
+  width: 8px;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.ed-man__finder i:nth-of-type(2) { top: -5px; }
+.ed-man__finder i:nth-of-type(4) { bottom: -5px; }
+
+.is-motion .ed-man__finder {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   03 · Flight — trajectory scene
+   -------------------------------------------------------------------------- */
+
+.ed-trajectory {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: clamp(2rem, 4vw, 3.6rem);
+  padding: clamp(0.8rem, 2vw, 1.4rem) 0;
+  border-top: 1px solid rgba(237, 230, 214, 0.24);
+  border-bottom: 1px solid rgba(237, 230, 214, 0.24);
+  background: var(--blue-deep);
+  overflow: hidden;
+}
+
+.ed-trajectory__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.ed-trajectory__top > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ed-trajectory__phase {
+  font-family: var(--f-mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.ed-trajectory__clock {
+  flex: none;
+  font-family: var(--f-poster);
+  font-size: clamp(2rem, 4.4vw, 4.2rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  line-height: 0.82;
+  color: var(--amber);
+}
+
+.ed-trajectory__plot {
+  position: relative;
+  isolation: isolate;
+}
+
+.ed-trajectory__svg,
+.ed-trajectory__log {
+  position: relative;
+  z-index: 1;
+}
+
+.ed-trajectory__plot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.34fr);
+  gap: clamp(1.2rem, 3vw, 2.8rem);
+  align-items: center;
+  margin-top: 0.4rem;
+}
+
+.ed-trajectory__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  border: 1px solid rgba(237, 230, 214, 0.14);
+}
+
+.ed-trajectory__grid path {
+  fill: none;
+  stroke: rgba(237, 230, 214, 0.1);
+  stroke-width: 0.7;
+}
+
+.ed-trajectory__terrain {
+  fill: none;
+  stroke: rgba(183, 200, 187, 0.28);
+  stroke-width: 0.9;
+}
+
+.ed-trajectory__route {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ed-trajectory__route-dash {
+  fill: none;
+  stroke: rgba(224, 163, 46, 0.5);
+  stroke-width: 0.7;
+  stroke-dasharray: 3 6;
+}
+
+.ed-trajectory__jump {
+  fill: none;
+  stroke: #ff8a70;
+  stroke-width: 1.3;
+  stroke-dasharray: 4 4;
+}
+
+.ed-trajectory__field ellipse {
+  fill: none;
+  stroke: #ff8a70;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.ed-trajectory__field ellipse:first-child {
+  fill: rgba(214, 49, 24, 0.14);
+}
+
+.ed-trajectory__event circle {
+  fill: var(--amber);
+  stroke: var(--blue-deep);
+  stroke-width: 1.5;
+}
+
+.ed-trajectory__event text {
+  fill: var(--paper-on-dark);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.ed-trajectory__event text.is-quiet {
+  fill: #bcc8e3;
+  font-size: 9.5px;
+}
+
+.ed-trajectory__plane path {
+  fill: var(--paper-on-dark);
+}
+
+.ed-trajectory__labels,
+.ed-trajectory__labels text {
+  fill: #bcc8e3;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+}
+
+.ed-trajectory__log {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid rgba(237, 230, 214, 0.2);
+}
+
+.ed-trajectory__log li {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(237, 230, 214, 0.16);
+  font-size: 12px;
+  line-height: 1.4;
+  color: #cfd8ee;
+}
+
+.ed-trajectory__log b {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--amber);
+}
+
+.ed-trajectory__foot {
+  font-family: var(--f-mono);
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  color: #bcc8e3;
+}
+
+/* --------------------------------------------------------------------------
+   04 · The Jump — scrub feedback
+   -------------------------------------------------------------------------- */
+
+.ed-jump__stage {
+  position: relative;
+  isolation: isolate;
+}
+
+.ed-jump__when {
+  position: absolute;
+  top: 50%;
+  left: 56%;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  font-family: var(--f-poster);
+  font-size: clamp(5.5rem, 22vw, 15rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 0.7;
+  color: rgba(237, 230, 214, 0.055);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.ed-jump__stage > :not(.ed-jump__when) {
+  position: relative;
+  z-index: 1;
+}
+
+.ed-jump__marker {
+  transition: none;
+  will-change: top;
+}
+
+.ed-jump__marks article {
+  will-change: opacity;
+}
+
+/* --------------------------------------------------------------------------
+   06 · The Money — pinned horizontal sequence
+   -------------------------------------------------------------------------- */
+
+.ed-strip.is-horizontal-pin {
+  overflow: hidden;
+}
+
+.ed-strip.is-horizontal-pin .ed-strip__track {
+  width: max-content;
+  overflow: visible;
+  scroll-snap-type: none;
+  background: transparent;
+  gap: 1.25rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.ed-strip.is-horizontal-pin .ed-strip__buttons {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ed-strip.is-horizontal-pin .ed-strip__item {
+  padding: 1.15rem 1.35rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-hi);
+  transform: translateY(calc(var(--offset, 0px) + (1 - var(--focus, 1)) * 6px))
+    scale(calc(0.965 + var(--focus, 1) * 0.035));
+  opacity: calc(0.74 + var(--focus, 1) * 0.26);
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+/* --------------------------------------------------------------------------
+   09 · Theories — selected row correspondence
+   -------------------------------------------------------------------------- */
+
+.ed-matrix tbody tr {
+  transition: background 220ms var(--ease);
+}
+
+.ed-matrix tbody tr.is-selected {
+  background: rgba(237, 230, 214, 0.07);
+}
+
+.ed-matrix tbody tr.is-selected th {
+  box-shadow: inset 3px 0 0 var(--amber);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 899px) {
+  .ed-man__finder {
+    display: none !important;
+  }
+
+  .ed-trajectory {
+    min-height: 0;
+  }
+
+  .ed-trajectory__plot {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .ed-trajectory__clock {
+    font-size: clamp(2rem, 9vw, 3rem);
+  }
+
+  .ed-trajectory__log li {
+    grid-template-columns: 66px minmax(0, 1fr);
+    padding: 0.4rem 0;
+    font-size: 11.5px;
+  }
+}
+
+@media (min-width: 900px) {
+  .ed-trajectory {
+    min-height: calc(100svh - 80px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion / in-page motion off
+   -------------------------------------------------------------------------- */
+
+.ed.is-reduced .ed-man__finder {
+  display: none !important;
+}
+
+.ed.is-reduced .ed-strip.is-horizontal-pin {
+  overflow-x: auto;
+}
+
+.ed.is-reduced .ed-strip,
+.ed.is-reduced .ed-strip__track {
+  width: auto;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.ed.is-reduced .ed-strip__buttons {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.ed.is-reduced .ed-trajectory {
+  min-height: 0;
+}
+
+.ed.is-reduced .ed-jump__marker {
+  transition: none;
+}
+
+.ed.is-reduced .ed-head__title,
+.ed.is-reduced .ed-statement,
+.ed.is-reduced .ed-cover__title {
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-man__finder {
+    display: none !important;
+  }
+
+  .ed-strip.is-horizontal-pin {
+    overflow-x: auto;
+  }
+
+  .ed-strip,
+  .ed-strip__track {
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .ed-strip__buttons {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .ed-trajectory {
+    min-height: 0;
+  }
+
+  .ed-cover__figure img,
+  .ed-money__scan img,
+  .ed-search__aerial img,
+  .ed-remains__vane img,
+  .ed-flight__crew img,
+  .ed-head__title,
+  .ed-statement,
+  .ed-cover__title,
+  .ed-jump__marker {
+    will-change: auto;
+  }
+}
+
+/* ==========================================================================
+   Motion system — masks, cameras, evidence choreography
+   These rules add a stage. They do not alter the edition's palette, type,
+   grid or imagery.
+   ========================================================================== */
+
+/* Word masks. The written line is unchanged; only its entrance is staged.
+   The mask needs padding on both sides: a tight line-height like the cover's
+   0.76 pushes the ink of the capitals outside the line box, and an unpadded
+   mask clips the top of every letter. Negative margins cancel the padding so
+   the baseline and the line box stay exactly where the type sets them. */
+.ed-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding: 0.14em 0.04em 0.17em;
+  margin: -0.14em -0.04em -0.17em;
+}
+
+.ed-word__in {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* The cover headline rises from behind its masks as a CSS animation. It is
+   deliberately not part of the GSAP scene: a scene that is interrupted mid-way
+   must never be able to leave the title hidden behind the subtitle. */
+.is-motion .ed-cover__title .ed-word__in {
+  --ed-word-x: -9%;
+  --ed-word-r: -1.6deg;
+  animation: ed-word-rise 1.25s cubic-bezier(0.16, 1, 0.3, 1) 0.15s backwards;
+}
+
+.is-motion .ed-cover__title .ed-word:nth-of-type(2) .ed-word__in {
+  --ed-word-x: 9%;
+  --ed-word-r: 1.6deg;
+  animation-delay: 0.24s;
+}
+
+@keyframes ed-word-rise {
+  from {
+    transform: translate(var(--ed-word-x, 0), 122%) rotate(var(--ed-word-r, 0deg));
+  }
+  to {
+    transform: none;
+  }
+}
+
+.is-motion .ed-cover__title,
+.is-motion .ed-head__title {
+  overflow: visible;
+}
+
+/* --------------------------------------------------------------------------
+   02 · The Note — the reading loupe
+   -------------------------------------------------------------------------- */
+
+.ed-note__focus {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  display: none;
+  border: 1px solid rgba(214, 49, 24, 0.85);
+  pointer-events: none;
+  will-change: transform, width, height, opacity;
+}
+
+.ed-note__focus::before,
+.ed-note__focus::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--red);
+}
+
+.ed-note__focus::before {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.ed-note__focus::after {
+  right: -1px;
+  bottom: -1px;
+  border-top: 0;
+  border-left: 0;
+}
+
+.ed-note__focus i {
+  position: absolute;
+  display: block;
+  background: rgba(214, 49, 24, 0.72);
+}
+
+.ed-note__focus i:nth-of-type(1),
+.ed-note__focus i:nth-of-type(3) {
+  width: 1px;
+  height: 8px;
+  top: 50%;
+  margin-top: -4px;
+}
+
+.ed-note__focus i:nth-of-type(1) { left: -5px; }
+.ed-note__focus i:nth-of-type(3) { right: -5px; }
+
+.ed-note__focus i:nth-of-type(2),
+.ed-note__focus i:nth-of-type(4) {
+  height: 1px;
+  width: 8px;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.ed-note__focus i:nth-of-type(2) { top: -5px; }
+.ed-note__focus i:nth-of-type(4) { bottom: -5px; }
+
+.is-motion .ed-note__focus {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   03 · Flight — aircraft camera and paper hand-off
+   -------------------------------------------------------------------------- */
+
+.ed-flight__diagram {
+  overflow: hidden;
+}
+
+.ed-aircraft {
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.ed-flight__paper,
+.ed-remains__night {
+  transform-origin: 50% 100%;
+  will-change: clip-path, transform;
+}
+
+/* --------------------------------------------------------------------------
+   06 · The Money — horizontal readout
+   -------------------------------------------------------------------------- */
+
+.ed-strip__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 0.8rem 1.2rem;
+}
+
+.ed-strip__live {
+  font-family: var(--f-poster);
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  line-height: 0.8;
+  letter-spacing: 0.01em;
+  color: var(--red-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ed-strip__readout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.ed-strip__readout i {
+  display: block;
+  width: 84px;
+  height: 2px;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.ed-strip__readout b {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   07 · Evidence — assembled index
+   -------------------------------------------------------------------------- */
+
+.ed-evidence__index {
+  position: relative;
+}
+
+.ed-evidence__thread {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 31px;
+  z-index: 0;
+  display: none;
+  width: 1px;
+  background: rgba(214, 49, 24, 0.55);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ed-evidence__index.is-assembled {
+  z-index: 3;
+  background: var(--paper);
+}
+
+.ed-evidence__index.is-assembled .ed-evidence__thread {
+  display: block;
+}
+
+.ed-evidence__row {
+  position: relative;
+}
+
+.ed-evidence__row > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   09 · Theories — the matrix scan
+   -------------------------------------------------------------------------- */
+
+.ed-matrix__scan {
+  grid-column: 1 / -1;
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--f-mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+}
+
+.ed-matrix [data-col] {
+  transition: background 220ms var(--ease), box-shadow 220ms var(--ease);
+}
+
+.ed-matrix [data-col].is-scanning {
+  background: rgba(224, 163, 46, 0.13);
+  box-shadow: inset 0 2px 0 var(--amber);
+}
+
+.ed-matrix tbody tr.is-selected [data-col].is-scanning {
+  background: rgba(224, 163, 46, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 899px) {
+  .ed-word {
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+
+  .ed-note__focus {
+    display: none !important;
+  }
+
+  .ed-strip__head {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .ed-strip__live {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 2.2rem;
+  }
+
+  .ed-strip__readout {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+  }
+
+  .ed-strip__buttons {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+
+.ed.is-reduced .ed-strip.is-horizontal-pin .ed-strip__item {
+  transform: none;
+  opacity: 1;
+}
+
+.ed.is-reduced [data-flight-world] {
+  transform: none !important;
+}
+
+.ed.is-reduced .ed-note__focus,
+.ed.is-reduced .ed-evidence__thread {
+  display: none !important;
+}
+
+.ed.is-reduced .ed-evidence__index.is-assembled {
+  background: none;
+}
+
+.ed.is-reduced .ed-word__in,
+.ed.is-reduced .ed-aircraft,
+.ed.is-reduced .ed-flight__paper,
+.ed.is-reduced .ed-remains__night,
+.ed.is-reduced .ed-strip__readout b {
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-flight-world] {
+    transform: none !important;
+  }
+
+  .ed-note__focus,
+  .ed-evidence__thread {
+    display: none !important;
+  }
+
+  .ed-evidence__index.is-assembled {
+    background: none;
+  }
+
+  .ed-word__in,
+  .ed-aircraft,
+  .ed-flight__paper,
+  .ed-remains__night,
+  .ed-strip__readout b {
+    will-change: auto;
+  }
+}

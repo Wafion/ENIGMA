@@ -1,0 +1,899 @@
+/* --------------------------------------------------------------------------
+   Responsive — desktop is the primary edit; mobile is a separate composition.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1200px) {
+  .ed-head {
+    grid-template-columns: 150px minmax(0, 1fr) minmax(100px, 180px);
+  }
+
+  .ed-man {
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  }
+
+  .ed-ledger__head,
+  .ed-ledger__row {
+    grid-template-columns: 100px minmax(0, 1fr) 120px;
+  }
+
+  .ed-named__head,
+  .ed-suspect__row {
+    grid-template-columns: minmax(200px, 1.1fr) 100px 120px minmax(150px, 1.2fr) minmax(150px, 1.2fr) 24px;
+    gap: 0.7rem;
+  }
+
+  .ed-register__assets-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1020px) {
+  .ed-head {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+
+  .ed-head__aside {
+    grid-column: 2;
+    text-align: left;
+    padding-top: 0;
+  }
+
+  .ed-man {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ed-man__plate {
+    position: relative;
+    top: auto;
+  }
+
+  .ed-man__sketches {
+    grid-template-columns: 0.92fr 1.08fr;
+    align-items: start;
+  }
+
+  .ed-man__sketch.is-b {
+    margin-top: 0;
+  }
+
+  .ed-man__age {
+    width: min(260px, 60%);
+    margin: 14px 0 0;
+  }
+
+  .ed-man__body .ed-statement {
+    max-width: none;
+  }
+
+  .ed-note__stage {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-note__left {
+    position: static;
+  }
+
+  .ed-note__prose {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-note__prose .ed-quote {
+    grid-column: 1;
+    grid-row: auto;
+    position: static;
+  }
+
+  .ed-flight__tech {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-flight__facts dl {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 2rem;
+  }
+
+  .ed-flight__lede-row,
+  .ed-flight__close {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-flight__close .ed-margins {
+    margin-top: 1.4rem;
+  }
+
+  .ed-search__stage {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-search__map {
+    position: static;
+  }
+
+  .ed-money__field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-bill-field {
+    position: static;
+  }
+
+  .ed-bill-field__grid {
+    max-width: 560px;
+  }
+
+  .ed-named__head {
+    display: none;
+  }
+
+  .ed-suspect__row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 0.5rem 1rem;
+    padding: 0.8rem 0;
+  }
+
+  .ed-suspect__name {
+    grid-column: 1 / -1;
+  }
+
+  .ed-suspect__age {
+    grid-column: 1;
+  }
+
+  .ed-suspect__row > span:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .ed-suspect__why {
+    grid-column: 1 / -1;
+  }
+
+  .ed-suspect__outcome {
+    grid-column: 1 / -1;
+    padding-top: 0.3rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  .ed-suspect__chevron {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .ed-matrix {
+    display: block;
+    table-layout: auto;
+  }
+
+  .ed-matrix thead {
+    display: none;
+  }
+
+  .ed-matrix tbody,
+  .ed-matrix tr,
+  .ed-matrix th,
+  .ed-matrix td {
+    display: block;
+  }
+
+  .ed-matrix tr {
+    margin-bottom: 1rem;
+    border: 1px solid rgba(237, 230, 214, 0.28);
+  }
+
+  .ed-matrix tbody th {
+    padding: 0.6rem;
+    background: rgba(237, 230, 214, 0.06);
+    border: 0;
+    border-bottom: 1px solid rgba(237, 230, 214, 0.24);
+  }
+
+  .ed-matrix td {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 0.7rem;
+    border: 0;
+    border-bottom: 1px solid rgba(237, 230, 214, 0.16);
+    padding: 0.45rem 0.6rem;
+  }
+
+  .ed-matrix td::before {
+    content: attr(data-label);
+    font-family: var(--f-mono);
+    font-size: 7.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #bcc8e3;
+  }
+
+  .ed-matrix td > span:last-child {
+    grid-column: 2;
+    margin-top: 0;
+  }
+
+  .ed-register__sources {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ed-register__head {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-register__head .ed-register__archive {
+    grid-column: 1;
+  }
+
+  .ed-source-panel__assets {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .ed-mast__case,
+  .ed-mast__chapter {
+    display: none;
+  }
+
+  .ed-mast {
+    gap: 0.7rem;
+  }
+
+  .ed-mast__nav {
+    margin-left: auto;
+  }
+
+  .ed-mast__nav button {
+    padding: 6px 6px;
+    font-size: 9.5px;
+  }
+
+  .ed-cover__foot dl {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem 1.4rem;
+  }
+
+  .ed-cover__foot {
+    align-items: flex-start;
+    padding-block: 0.8rem;
+  }
+
+  .ed-cover__enter {
+    margin-top: 0.3rem;
+  }
+
+  .ed-jump__pin {
+    height: auto;
+  }
+
+  .ed-jump__sticky {
+    position: static;
+    min-height: 0;
+    padding-block: clamp(3rem, 8vw, 5rem);
+  }
+
+  .ed-jump__stage {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+
+  .ed-jump__visual {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 1.4rem;
+    align-items: start;
+  }
+
+  .ed-jump__marker {
+    display: none;
+  }
+
+  .ed-jump__record-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-jump__instruments {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ed-theories__tabs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ed-theories__tabs button {
+    border-bottom: 1px solid rgba(237, 230, 214, 0.22);
+  }
+
+  .ed-theories__tabs button:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .ed-theory__lead {
+    grid-template-columns: 74px 1fr;
+  }
+
+  .ed-theory__verdict {
+    grid-column: 1 / -1;
+  }
+
+  .ed-theory__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-evidence__head,
+  .ed-evidence__row {
+    grid-template-columns: 52px minmax(0, 1fr) 130px 28px;
+  }
+
+  .ed-evidence__head span:nth-child(4),
+  .ed-evidence__source {
+    display: none;
+  }
+
+  .ed-evidence__summary {
+    display: block;
+  }
+
+  .ed-chain__row {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .ed-chain__arrow {
+    transform: rotate(90deg);
+    justify-self: start;
+  }
+
+  .ed-register__assets-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ed-register__foot {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 760px) {
+  .ed {
+    font-size: 1rem;
+  }
+
+  .ed-frame {
+    display: none;
+  }
+
+  /* The date is already in the masthead line on mobile; the rotated edge
+     label would be a duplicate and would sit over the headline. */
+  .ed-cover__date,
+  .ed-cover .ed-chapter__folio {
+    display: none;
+  }
+
+  .ed-cover__marks {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .ed-cover__title {
+    font-size: 18.4vw;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .ed-cover__subrow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .ed-cover__line {
+    text-align: left;
+    max-width: 34ch;
+  }
+
+  .ed-cover__media {
+    display: flex;
+    /* Let the archive photograph keep its wide aspect; a fixed media height
+       cropped the aircraft and left a dark band under the caption. */
+    min-height: 0;
+  }
+
+  .ed-cover__figure {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+
+  .ed-cover__figure .ed-figure__frame {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  .ed-cover__figure .ed-figure__caption {
+    position: static;
+    width: 100%;
+    max-width: none;
+    border-right: 0;
+  }
+
+  /* On a narrow plate the context inset covered the Ariel label. Move it to
+     the empty lower-right corner and shrink it. */
+  .ed-map__overview {
+    top: auto;
+    bottom: 8px;
+    right: 8px;
+    width: 64px;
+  }
+
+  .ed-cover__foot {
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .ed-head {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-head__meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ed-head__num {
+    font-size: 2.2rem;
+  }
+
+  .ed-head__aside {
+    grid-column: 1;
+  }
+
+  .ed-head__title {
+    max-width: none;
+    font-size: clamp(2.4rem, 10vw, 3.6rem);
+  }
+
+  .ed-man__body,
+  .ed-man__plate {
+    min-width: 0;
+  }
+
+  .ed-man__sketches {
+    margin-inline: calc(var(--pad) * -1);
+    padding-inline: var(--pad);
+  }
+
+  .ed-margins {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-margin {
+    grid-template-columns: 80px 1fr;
+  }
+
+  .ed-man__sketches {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+  }
+
+  .ed-man__sketch,
+  .ed-man__age {
+    flex: 0 0 68vw;
+    max-width: 320px;
+    scroll-snap-align: start;
+  }
+
+  .ed-man__age {
+    margin: 0;
+  }
+
+  .ed-note__sheet {
+    min-height: 360px;
+    padding: 2.2rem 1.2rem 2rem 2.6rem;
+  }
+
+  .ed-note__sheet::before {
+    left: 1.7rem;
+  }
+
+  .ed-note__annotations {
+    position: static;
+    margin-top: 2rem;
+  }
+
+  .ed-note__prose {
+    gap: 1.6rem;
+  }
+
+  .ed-flight__foliage {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ed-flight__figures {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ed-flight__facts dl {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-flight__roster {
+    grid-template-columns: 1fr;
+    gap: 1.4rem;
+  }
+
+  .ed-timeline {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-timeline__item + .ed-timeline__item {
+    padding-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .ed-jump__head {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-jump__stage {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-jump__scale {
+    min-height: 30vh;
+    max-width: 220px;
+  }
+
+  .ed-jump__visual {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-jump__instruments {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ed-map__bar {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ed-map__steps {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-map__steps button + button {
+    border-left: 0;
+    border-top: 1px solid rgba(237, 230, 214, 0.24);
+  }
+
+  .ed-map__overview {
+    width: 68px;
+  }
+
+  .ed-search__lead {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-search__lead-tag {
+    justify-self: start;
+  }
+
+  .ed-money__interpretations,
+  .ed-money__interp-head {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-money__interp-head .ed-kicker {
+    grid-column: 1;
+  }
+
+  .ed-strip__item {
+    flex-basis: 82vw;
+  }
+
+  .ed-evidence__head {
+    display: none;
+  }
+
+  .ed-evidence__row {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    gap: 0.5rem 0.8rem;
+  }
+
+  .ed-evidence__row > span:nth-child(3) {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .ed-evidence__inspect {
+    display: none;
+  }
+
+  .ed-evidence__title strong {
+    font-size: 1.2rem;
+  }
+
+  .ed-suspect__columns {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .ed-theory {
+    padding: 1rem;
+  }
+
+  .ed-theory__lead {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-theory__num {
+    font-size: 2.2rem;
+  }
+
+  .ed-theory__verdict {
+    grid-column: 1;
+  }
+
+  .ed-matrix td {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+
+  .ed-remains__ledger dl > div {
+    grid-template-columns: 1fr 60px;
+    gap: 0.4rem 0.8rem;
+  }
+
+  .ed-remains__ledger dt {
+    grid-column: 1;
+  }
+
+  .ed-remains__ledger dd:nth-of-type(1) {
+    grid-column: 1;
+  }
+
+  .ed-remains__ledger .ed-remains__count {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .ed-remains__questions ol {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-remains__epilogue {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-remains__night h2 {
+    font-size: clamp(2.4rem, 10vw, 3.6rem);
+  }
+
+  .ed-register__sources {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-register__assets-head,
+  .ed-remains__ledger-head,
+  .ed-remains__questions-head,
+  .ed-matrix__head {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-index__list a {
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    gap: 0.6rem;
+  }
+
+  .ed-index__rhythm {
+    display: none;
+  }
+
+  .ed-index__climate {
+    font-size: 8px;
+  }
+
+  .ed-index__utility {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .ed-overlay__panel {
+    max-width: none;
+  }
+
+  .ed-overlay--drawer .ed-overlay__panel {
+    width: 100%;
+    max-width: none;
+    border-left: 0;
+  }
+
+  .ed-source-panel__asset {
+    grid-template-columns: 104px 1fr;
+  }
+
+  .ed-source-panel__asset-media img {
+    height: 96px;
+  }
+}
+
+@media (max-width: 520px) {
+  .ed-mast {
+    height: 44px;
+    padding-inline: 14px;
+  }
+
+  .ed-mast__brand {
+    font-size: 18px;
+  }
+
+  .ed-mast__nav button {
+    min-height: 40px;
+    padding-block: 8px;
+    font-size: 9px;
+    gap: 4px;
+  }
+
+  .ed-mast__nav button span {
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ed-cover__title {
+    font-size: 19vw;
+  }
+
+  .ed-cover__foot dl {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ed-ledger__head,
+  .ed-ledger__row {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .ed-ledger__head span:nth-child(3),
+  .ed-ledger__row > span:nth-child(3) {
+    grid-column: 2;
+    padding-top: 2px;
+  }
+
+  .ed-flight__figure {
+    font-size: 2.4rem;
+  }
+
+  .ed-jump__silence {
+    font-size: 1.9rem;
+  }
+
+  .ed-jump__instruments {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-map__bar span:last-child {
+    display: none;
+  }
+
+  .ed-evidence__row {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .ed-evidence__row > span:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+  }
+
+  .ed-theories__tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-theories__tabs button {
+    border-left: 0;
+  }
+
+  .ed-matrix td {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .ed-matrix td > span:last-child {
+    grid-column: 1;
+  }
+
+  .ed-register__assets-list {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-index__list a {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .ed-index__climate {
+    display: none;
+  }
+
+  .ed-source-panel__asset {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-source-panel__asset-media img {
+    height: 160px;
+  }
+
+  .ed-asset-viewer dl div {
+    grid-template-columns: 82px 1fr;
+  }
+}
+
+/* Reduced motion: unpin and remove transforms. */
+.ed.is-reduced .ed-man__plate,
+.ed.is-reduced .ed-note__left,
+.ed.is-reduced .ed-note__prose .ed-quote,
+.ed.is-reduced .ed-search__map,
+.ed.is-reduced .ed-bill-field {
+  position: static;
+}
+
+.ed.is-reduced .ed-jump__pin {
+  height: auto;
+}
+
+.ed.is-reduced .ed-jump__sticky {
+  position: static;
+  min-height: 0;
+}
+
+.ed.is-reduced .ed-jump__marker {
+  display: none;
+}
+
+/* Without the sticky map the two-column search stage leaves a tall empty
+   column, so unpinned mode reflows to a single column. */
+.ed.is-reduced .ed-search__stage {
+  grid-template-columns: 1fr;
+  gap: 1.8rem;
+}
+
+.ed.is-reduced .ed-search__map {
+  max-width: 720px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-man__plate,
+  .ed-note__left,
+  .ed-note__prose .ed-quote,
+  .ed-search__map,
+  .ed-bill-field {
+    position: static;
+  }
+
+  .ed-jump__pin {
+    height: auto;
+  }
+
+  .ed-jump__sticky {
+    position: static;
+    min-height: 0;
+  }
+
+  .ed-jump__marker {
+    display: none;
+  }
+
+  .ed-search__stage {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+
+  .ed-search__map {
+    max-width: 720px;
+  }
+}

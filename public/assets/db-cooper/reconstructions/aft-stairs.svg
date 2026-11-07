@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" width="900" height="620" role="img" aria-label="Diagram of a Boeing 727 aft airstair in the deployed position">
+  <rect width="900" height="620" fill="#0b0f12"/>
+  <g opacity="0.16" stroke="#e7e2d6" stroke-width="0.5">
+    <path d="M0 80H900M0 160H900M0 240H900M0 320H900M0 400H900M0 480H900M0 560H900"/>
+  </g>
+  <g fill="none" stroke="#c7c2b6" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M60 250 C66 214 96 196 148 190 L600 176 C676 174 730 188 760 214 L816 186 L858 192 L840 246 L760 256 Z"/>
+    <path d="M60 250 C84 274 132 282 190 284 L760 266"/>
+    <path d="M520 244 L700 244 L676 330 L560 322 Z"/>
+    <path d="M726 252 L760 256 L784 300 L744 306 Z"/>
+    <path d="M304 252 L368 252 M404 252 L460 252" opacity="0.6"/>
+  </g>
+  <g stroke="#c08a4a" stroke-width="2" fill="none">
+    <path d="M700 270 L800 270 L858 478 L758 478 Z"/>
+    <path d="M718 288 L840 288 M724 308 L846 308 M730 328 L852 328 M736 348 L858 348 M742 368 L864 368 M748 388 L870 388 M754 408 L876 408 M760 428 L882 428 M766 448 L888 448"/>
+  </g>
+  <g fill="#c08a4a">
+    <circle cx="778" cy="474" r="4"/>
+  </g>
+  <g fill="#e7e2d6" font-family="'Geist Mono', monospace" font-size="12" letter-spacing="1.2">
+    <text x="46" y="56">DIAGRAM · 727-100 VENTRAL AIRSTAIR</text>
+    <text x="46" y="78" fill="#949086">DEPLOYED POSITION · NOT TO SCALE</text>
+    <text x="700" y="512" fill="#c08a4a">THE EXIT</text>
+    <text x="700" y="532" fill="#949086">10,000 FT · NIGHT · RAIN</text>
+    <text x="46" y="580" fill="#949086">E-02 · PROJECT-ORIGINAL RECONSTRUCTION</text>
+  </g>
+</svg>

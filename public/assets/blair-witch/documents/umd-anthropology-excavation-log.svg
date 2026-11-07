@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1040" width="800" height="1040">
+  <rect width="800" height="1040" fill="#131614"/>
+  <rect x="34" y="34" width="732" height="972" fill="none" stroke="#4d5e52" stroke-width="2"/>
+  <text x="70" y="84" font-family="monospace" font-size="12" fill="#7aa086">RECONSTRUCTED FIELD EXCAVATION LOG // IN-UNIVERSE LORE (OCT 16, 1995)</text>
+  <text x="70" y="128" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#e4dfd5">WESTERFIELD CABIN FOUNDATION EXCAVATION</text>
+  <text x="70" y="156" font-family="monospace" font-size="12" fill="#9ea89f">Fictional Recovery of Canvas Duffel Bag Containing 11 Film Cans &amp; Hi8 Video Tapes</text>
+  <line x1="70" y1="178" x2="730" y2="178" stroke="#4d5e52" stroke-width="1"/>
+  <!-- Excavation Grid Table -->
+  <g transform="translate(70, 206)" font-family="monospace" font-size="12" fill="#d8d4ca">
+    <rect width="660" height="360" fill="#0b0d0c" stroke="#4d5e52" stroke-width="1.5"/>
+    <line x1="0" y1="44" x2="660" y2="44" stroke="#4d5e52"/>
+    <text x="20" y="28" fill="#7aa086" font-weight="bold">ITEM ID</text>
+    <text x="150" y="28" fill="#7aa086" font-weight="bold">MEDIA FORMAT</text>
+    <text x="360" y="28" fill="#7aa086" font-weight="bold">IN-UNIVERSE CONTENT</text>
+    <text x="20" y="80">CAN-01..11</text>
+    <text x="150" y="80">16mm B&amp;W Tri-X Reversal</text>
+    <text x="360" y="80">CP-16 Documentary Reels (J. Leonard)</text>
+    <text x="20" y="125">TAPE-HI8-A</text>
+    <text x="150" y="125">8mm NTSC Hi8 Video</text>
+    <text x="360" y="125">Behind-the-scenes &amp; Tent Confessional</text>
+    <text x="20" y="170">DAT-01..09</text>
+    <text x="150" y="170">Tascam Digital Audio Tape</text>
+    <text x="360" y="170">Sync Sound &amp; Nocturnal Forest Audio</text>
+    <text x="20" y="215">DOC-JRN-94</text>
+    <text x="150" y="215">Bound Field Notebook</text>
+    <text x="360" y="215">Heather Donahue Expedition Journal</text>
+    <text x="20" y="260">SOIL-STRAT</text>
+    <text x="150" y="260">Sub-hearth Stone Stratum</text>
+    <text x="360" y="260">Buried beneath 100-yr cabin foundation</text>
+    <line x1="20" y1="290" x2="640" y2="290" stroke="#2c3830"/>
+    <text x="20" y="325" fill="#d4883a">PARADOX IN THE LORE: How did October 1994 footage become sealed beneath an undisturbed</text>
+    <text x="20" y="345" fill="#d4883a">19th-century stone foundation wall? This temporal anomaly is central to the 1999 mythos.</text>
+  </g>
+  <g font-family="Georgia, serif" font-size="14.5" fill="#c7c2b8">
+    <text x="70" y="620">In the fictional framing device created by Haxan Films, anthropology students from the</text>
+    <text x="70" y="644">University of Maryland excavating the ruins of a 19th-century cabin (Westerfield cabin)</text>
+    <text x="70" y="668">on October 16, 1995 uncover the students' equipment bag buried underneath the stone hearth.</text>
+    <text x="70" y="715">In reality, the three actors shot approximately 19 to 20 hours of raw 16mm and Hi8 footage</text>
+    <text x="70" y="739">during their 8-day hike in Seneca Creek State Park (October 23–31, 1997), which editors</text>
+    <text x="70" y="763">Daniel Myrick and Eduardo Sánchez cut down into the 81-minute theatrical feature.</text>
+  </g>
+</svg>

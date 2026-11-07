@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1040" width="800" height="1040">
+  <rect width="800" height="1040" fill="#dcd5c7"/>
+  <rect x="32" y="32" width="736" height="976" fill="none" stroke="#181715" stroke-width="4"/>
+  <!-- Prominent Reconstruction Disclosure Banner -->
+  <rect x="32" y="32" width="736" height="54" fill="#8f241b"/>
+  <text x="400" y="56" font-family="monospace" font-size="13" font-weight="bold" fill="#f4efe6" text-anchor="middle" letter-spacing="2">FICTIONAL PROMOTIONAL ARTIFACT RECONSTRUCTION (NOT A REAL POLICE BULLETIN)</text>
+  <text x="400" y="74" font-family="monospace" font-size="10.5" fill="#f4efe6" text-anchor="middle" letter-spacing="1">RECONSTRUCTED AFTER HAXAN FILMS / ARTISAN ENTERTAINMENT SUNDANCE CAMPAIGN (JAN 1999)</text>
+  <text x="400" y="155" font-family="Impact, Arial Black, sans-serif" font-size="64" fill="#181715" text-anchor="middle" letter-spacing="6">MISSING</text>
+  <text x="400" y="192" font-family="monospace" font-size="15" font-weight="bold" fill="#2c2a26" text-anchor="middle">LAST SEEN OCTOBER 1994 — BLACK HILLS FOREST, BURKITTSVILLE, MD</text>
+  <line x1="72" y1="212" x2="728" y2="212" stroke="#181715" stroke-width="2.5"/>
+  <!-- Three Subject Silhouette/Dossier Frames -->
+  <g transform="translate(72, 240)">
+    <g transform="translate(0, 0)">
+      <rect width="200" height="240" fill="#22201d" stroke="#181715" stroke-width="2"/>
+      <text x="100" y="115" font-family="monospace" font-size="13" fill="#a8a298" text-anchor="middle">[SUBJECT 01]</text>
+      <text x="100" y="138" font-family="monospace" font-size="11" fill="#7a756c" text-anchor="middle">DIRECTOR / HI8 CAM</text>
+      <text x="100" y="270" font-family="monospace" font-size="14" font-weight="bold" fill="#181715" text-anchor="middle">HEATHER DONAHUE</text>
+      <text x="100" y="290" font-family="monospace" font-size="11" fill="#4a463f" text-anchor="middle">Role: Documentary Director</text>
+    </g>
+    <g transform="translate(228, 0)">
+      <rect width="200" height="240" fill="#22201d" stroke="#181715" stroke-width="2"/>
+      <text x="100" y="115" font-family="monospace" font-size="13" fill="#a8a298" text-anchor="middle">[SUBJECT 02]</text>
+      <text x="100" y="138" font-family="monospace" font-size="11" fill="#7a756c" text-anchor="middle">16MM CP-16 CAMERA</text>
+      <text x="100" y="270" font-family="monospace" font-size="14" font-weight="bold" fill="#181715" text-anchor="middle">JOSHUA LEONARD</text>
+      <text x="100" y="290" font-family="monospace" font-size="11" fill="#4a463f" text-anchor="middle">Role: Cinematographer</text>
+    </g>
+    <g transform="translate(456, 0)">
+      <rect width="200" height="240" fill="#22201d" stroke="#181715" stroke-width="2"/>
+      <text x="100" y="115" font-family="monospace" font-size="13" fill="#a8a298" text-anchor="middle">[SUBJECT 03]</text>
+      <text x="100" y="138" font-family="monospace" font-size="11" fill="#7a756c" text-anchor="middle">DAT SOUND RECORDIST</text>
+      <text x="100" y="270" font-family="monospace" font-size="14" font-weight="bold" fill="#181715" text-anchor="middle">MICHAEL WILLIAMS</text>
+      <text x="100" y="290" font-family="monospace" font-size="11" fill="#4a463f" text-anchor="middle">Role: Sound Engineer</text>
+    </g>
+  </g>
+  <line x1="72" y1="565" x2="728" y2="565" stroke="#181715" stroke-width="1.5"/>
+  <g font-family="monospace" font-size="13" fill="#1e1c19">
+    <text x="72" y="605">IN-UNIVERSE NARRATIVE SUMMARY:</text>
+    <text x="72" y="630">On October 21, 1994, three Montgomery College film students hiked into the Black Hills</text>
+    <text x="72" y="652">near Burkittsville, Maryland to shoot a thesis documentary on the Blair Witch legend.</text>
+    <text x="72" y="674">Joshua Leonard's 1971 Plymouth Barracuda was located along MD Route 17 on October 26.</text>
+    <text x="72" y="725">REAL-WORLD MARKETING CONTEXT (SUNDANCE, JANUARY 1999):</text>
+    <text x="72" y="750">Filmmakers Daniel Myrick and Eduardo Sánchez distributed flyers styled after missing-person</text>
+    <text x="72" y="772">bulletins at the 1999 Sundance Film Festival and listed the three living actors as</text>
+    <text x="72" y="794">"Missing, presumed dead" on IMDb. Because the actors used their real legal names and</text>
+    <text x="72" y="816">withheld press appearances, early internet users debated whether the disappearance was real.</text>
+  </g>
+  <rect x="72" y="865" width="656" height="90" fill="#ebe5d9" stroke="#181715" stroke-width="1.5"/>
+  <text x="92" y="895" font-family="monospace" font-size="11.5" font-weight="bold" fill="#8f241b">LEGAL &amp; ARCHIVAL DISCLOSURE:</text>
+  <text x="92" y="918" font-family="monospace" font-size="11" fill="#2c2a26">This plate is a typographic reconstruction demonstrating the graphic structure of the 1999</text>
+  <text x="92" y="938" font-family="monospace" font-size="11" fill="#2c2a26">viral campaign without reproducing copyrighted Artisan Entertainment key art.</text>
+</svg>

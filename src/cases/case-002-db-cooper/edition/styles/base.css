@@ -1,0 +1,874 @@
+/* ==========================================================================
+   ENIGMA · CASE 002 / NORJAK
+   The Cooper File — a 1970s field dossier re-set as an editorial documentary.
+   Flat print palette. No decorative gradients, glass, glow, 3D, or grain.
+   ========================================================================== */
+
+.ed {
+  --paper: #f1ebdd;
+  --paper-hi: #faf7ef;
+  --manila: #e5d6b8;
+  --ink: #141311;
+  --ink-soft: #4b463c;
+  --rule: #c9bfa9;
+  --red: #d63118;
+  --red-deep: #9e2010;
+  /* Text-only accents. The stamp red stays on borders and fills; these
+     values carry the 4.5:1 contrast that the raw stamp red cannot. */
+  --red-text: #b02a12;
+  --amber-text: #7a5200;
+  --blue: #1b3e8f;
+  --blue-deep: #122a63;
+  --green: #244c3a;
+  --green-deep: #173428;
+  --amber: #e0a32e;
+  --night: #101c1d;
+  --night-hi: #1a2b2c;
+  --paper-on-dark: #ede6d6;
+  --muted-on-dark: #a8b5ad;
+
+  --f-poster: 'Anton', 'Arial Narrow', Impact, sans-serif;
+  --f-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --f-body: 'Newsreader Variable', 'Newsreader', Georgia, Cambria, serif;
+  --f-ui: 'Instrument Sans Variable', 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --pad: clamp(1.15rem, 4.2vw, 4.5rem);
+  --measure: 64ch;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --fg: var(--ink);
+  --fg-soft: var(--ink-soft);
+  --rule-c: var(--rule);
+  --focus: var(--red);
+
+  position: relative;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html:has(.ed),
+body:has(.ed) {
+  background: #f1ebdd;
+  color: #141311;
+}
+
+.ed *,
+.ed *::before,
+.ed *::after {
+  box-sizing: border-box;
+}
+
+.ed h1,
+.ed h2,
+.ed h3,
+.ed h4,
+.ed p,
+.ed figure,
+.ed blockquote,
+.ed dl,
+.ed dd,
+.ed dt,
+.ed ol,
+.ed ul {
+  margin: 0;
+}
+
+.ed ol,
+.ed ul {
+  padding: 0;
+  list-style: none;
+}
+
+.ed img,
+.ed svg {
+  display: block;
+  max-width: 100%;
+}
+
+.ed img {
+  height: auto;
+}
+
+.ed button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ed a {
+  color: inherit;
+}
+
+.ed :focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.ed .ed-skip {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  padding: 10px 16px;
+  background: var(--ink);
+  /* `.ed a` sets `color: inherit` with higher specificity. */
+  color: var(--paper);
+  font-family: var(--f-ui);
+  font-size: 13px;
+  transform: translateY(-200%);
+}
+
+.ed .ed-skip:focus {
+  transform: none;
+}
+
+.ed-frame {
+  position: fixed;
+  inset: 8px;
+  z-index: 65;
+  pointer-events: none;
+  border: 1px solid rgba(20, 19, 17, 0.16);
+}
+
+.ed-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(237, 230, 214, 0.1);
+}
+
+.ed-wrap {
+  width: min(calc(100% - (var(--pad) * 2)), 1380px);
+  margin-inline: auto;
+}
+
+.ed-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Type
+   -------------------------------------------------------------------------- */
+
+.ed-kicker {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--fg-soft);
+}
+
+.ed-statement {
+  font-family: var(--f-poster);
+  font-size: clamp(2.9rem, 7.4vw, 6.8rem);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.ed-quote {
+  border-top: 1px solid var(--rule-c);
+  border-bottom: 1px solid var(--rule-c);
+  padding: 1.4rem 0 1.2rem;
+}
+
+.ed-quote p {
+  font-family: var(--f-display);
+  font-size: clamp(1.7rem, 3.1vw, 2.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.ed-quote footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.1rem;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-soft);
+}
+
+.ed-prose {
+  max-width: var(--measure);
+}
+
+.ed-prose p + p {
+  margin-top: 1.1em;
+}
+
+.ed-prose p {
+  font-size: clamp(1.02rem, 1.35vw, 1.16rem);
+  line-height: 1.62;
+}
+
+.ed-cites {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 2px;
+  vertical-align: 0.1em;
+}
+
+.ed-cite {
+  border: 0;
+  border-bottom: 1px solid var(--rule-c);
+  background: none;
+  /* Inline citations sit in running text, so vertical padding grows the hit
+     area without changing the line box. */
+  padding: 3px 2px;
+  font-family: var(--f-mono);
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  color: var(--fg-soft);
+  line-height: 1.4;
+}
+
+.ed-cite:hover {
+  color: var(--red-text);
+  border-color: var(--red);
+}
+
+.ed-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: none;
+  padding: 0 0 2px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.ed-link:hover {
+  color: var(--red-text);
+}
+
+.ed-pull {
+  font-family: var(--f-display);
+  font-size: clamp(1.8rem, 2.7vw, 2.7rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* --------------------------------------------------------------------------
+   Status — word + border + mark, never colour alone
+   -------------------------------------------------------------------------- */
+
+.ed-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 5px 1px;
+  border: 1px solid currentColor;
+  font-family: var(--f-mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fg-soft);
+}
+
+.ed-status.is-compact {
+  font-size: 7.5px;
+  padding: 1px 4px 0;
+}
+
+.ed-status__mark {
+  font-size: 9px;
+  line-height: 1;
+}
+
+.ed-status[data-status='CONFIRMED'] {
+  border-style: solid;
+  border-width: 2px;
+  color: var(--green);
+}
+
+.ed-status[data-status='DOCUMENTED'] {
+  border-style: double;
+  border-width: 3px;
+  color: var(--blue);
+}
+
+.ed-status[data-status='REPORTED'] {
+  border-style: dashed;
+  color: var(--fg-soft);
+}
+
+.ed-status[data-status='ALLEGED'] {
+  border-style: dotted;
+  color: var(--red-deep);
+}
+
+.ed-status[data-status='THEORY'] {
+  border-style: solid;
+  border-width: 1px;
+  color: var(--amber-text);
+}
+
+.ed-status[data-status='SPECULATION'] {
+  border-style: dotted;
+  border-width: 2px;
+  color: var(--red-text);
+}
+
+.ed-status[data-status='RECONSTRUCTION'] {
+  border-style: dashed;
+  border-width: 2px;
+  color: var(--fg-soft);
+}
+
+.ed-status[data-status='UNKNOWN'] {
+  border-style: solid;
+  border-width: 1px;
+  color: var(--fg-soft);
+  opacity: 0.82;
+}
+
+.ed-climate--blue .ed-status,
+.ed-climate--night .ed-status {
+  color: var(--paper-on-dark);
+}
+
+.ed-climate--blue .ed-status[data-status='THEORY'] {
+  color: var(--amber);
+}
+
+.ed-climate--blue .ed-status[data-status='CONFIRMED'] {
+  color: #b9dfc4;
+}
+
+.ed-climate--blue .ed-status[data-status='SPECULATION'] {
+  color: #f0a08e;
+}
+
+.ed-status-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Climate
+   -------------------------------------------------------------------------- */
+
+.ed-climate--paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.ed-climate--bright {
+  --paper: #faf7ef;
+  background: var(--paper-hi);
+  color: var(--ink);
+}
+
+.ed-climate--manila {
+  --fg: var(--ink);
+  --fg-soft: #5a4e3c;
+  --rule-c: #c6b18b;
+  background: var(--manila);
+  color: var(--ink);
+}
+
+.ed-climate--blue {
+  --fg: var(--paper-on-dark);
+  --fg-soft: #bcc8e3;
+  --rule-c: rgba(237, 230, 214, 0.24);
+  --focus: var(--amber);
+  --red-text: #ff8a70;
+  --amber-text: var(--amber);
+  background: var(--blue-deep);
+  color: var(--paper-on-dark);
+}
+
+.ed-climate--blue .ed-kicker {
+  color: #bcc8e3;
+}
+
+.ed-climate--night {
+  --fg: var(--paper-on-dark);
+  --fg-soft: var(--muted-on-dark);
+  --rule-c: rgba(237, 230, 214, 0.2);
+  --focus: var(--amber);
+  --red-text: #ff8a70;
+  --amber-text: var(--amber);
+  background: var(--night);
+  color: var(--paper-on-dark);
+}
+
+.ed-climate--night .ed-kicker {
+  color: var(--muted-on-dark);
+}
+
+.ed-climate--green {
+  --fg: var(--paper-on-dark);
+  --fg-soft: #b7c8bb;
+  --rule-c: rgba(237, 230, 214, 0.2);
+  --red-text: #ff8a70;
+  --amber-text: var(--amber);
+  background: var(--green-deep);
+  color: var(--paper-on-dark);
+}
+
+.ed-chapter {
+  position: relative;
+  padding: clamp(4.5rem, 9vw, 8.5rem) 0;
+  overflow: clip;
+  scroll-margin-top: 56px;
+}
+
+.ed-chapter__folio {
+  position: absolute;
+  top: clamp(1rem, 2.4vw, 2.4rem);
+  right: var(--pad);
+  font-family: var(--f-poster);
+  font-size: clamp(5rem, 14vw, 13rem);
+  line-height: 0.78;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  opacity: 0.055;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ed-paper-block {
+  --fg: var(--ink);
+  --fg-soft: var(--ink-soft);
+  --rule-c: var(--rule);
+  --focus: var(--red);
+  --red-text: #b02a12;
+  --amber-text: #7a5200;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* A paper insert inside a blue/night chapter must switch every piece of
+   type back to light-paper ink, including the status vocabulary. */
+.ed-climate--blue .ed-paper-block .ed-kicker,
+.ed-climate--night .ed-paper-block .ed-kicker,
+.ed-climate--green .ed-paper-block .ed-kicker {
+  color: var(--ink-soft);
+}
+
+.ed-climate--blue .ed-paper-block .ed-status,
+.ed-climate--night .ed-paper-block .ed-status,
+.ed-climate--green .ed-paper-block .ed-status {
+  color: var(--fg-soft);
+}
+
+.ed-climate--blue .ed-paper-block .ed-status[data-status='CONFIRMED'],
+.ed-climate--night .ed-paper-block .ed-status[data-status='CONFIRMED'] {
+  color: var(--green);
+}
+
+.ed-climate--blue .ed-paper-block .ed-status[data-status='DOCUMENTED'],
+.ed-climate--night .ed-paper-block .ed-status[data-status='DOCUMENTED'] {
+  color: var(--blue);
+}
+
+.ed-climate--blue .ed-paper-block .ed-status[data-status='ALLEGED'],
+.ed-climate--night .ed-paper-block .ed-status[data-status='ALLEGED'] {
+  color: var(--red-deep);
+}
+
+.ed-climate--blue .ed-paper-block .ed-status[data-status='THEORY'],
+.ed-climate--night .ed-paper-block .ed-status[data-status='THEORY'] {
+  color: var(--amber-text);
+}
+
+.ed-climate--blue .ed-paper-block .ed-status[data-status='SPECULATION'],
+.ed-climate--night .ed-paper-block .ed-status[data-status='SPECULATION'] {
+  color: var(--red-text);
+}
+
+/* --------------------------------------------------------------------------
+   Chapter head
+   -------------------------------------------------------------------------- */
+
+.ed-head {
+  display: grid;
+  grid-template-columns: minmax(130px, 210px) minmax(0, 1fr) minmax(120px, 220px);
+  gap: clamp(1.4rem, 3vw, 3.5rem);
+  align-items: start;
+  border-top: 1px solid var(--rule-c);
+  padding-top: 1rem;
+  margin-bottom: clamp(2.4rem, 5vw, 4.6rem);
+}
+
+.ed-head.is-tight {
+  margin-bottom: 1.6rem;
+}
+
+.ed-head__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.ed-head__num {
+  font-family: var(--f-poster);
+  font-size: clamp(2.4rem, 4.8vw, 4.6rem);
+  line-height: 0.8;
+  opacity: 0.28;
+}
+
+.ed-head__title {
+  max-width: 17ch;
+  font-family: var(--f-display);
+  font-size: clamp(2.6rem, 5vw, 5.2rem);
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.ed-head__lede {
+  max-width: 52ch;
+  margin-top: 1.1rem;
+  font-size: clamp(1.02rem, 1.4vw, 1.18rem);
+  color: var(--fg-soft);
+}
+
+.ed-head__lede p {
+  margin: 0;
+}
+
+.ed-head__aside {
+  padding-top: 0.3rem;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  line-height: 1.6;
+  text-align: right;
+  color: var(--fg-soft);
+}
+
+.ed-head__aside p span {
+  opacity: 0.66;
+}
+
+/* --------------------------------------------------------------------------
+   Margins
+   -------------------------------------------------------------------------- */
+
+.ed-margins {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  margin-top: clamp(2.6rem, 5vw, 4.4rem);
+  border-top: 1px solid var(--rule-c);
+  padding-top: 1.2rem;
+}
+
+.ed-margins.is-inline {
+  margin-top: 2.6rem;
+}
+
+.ed-margin {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.ed-margin__label {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--red-text);
+}
+
+.ed-margin p {
+  max-width: 44ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--fg-soft);
+}
+
+.ed-margins.is-night .ed-margin p {
+  color: var(--muted-on-dark);
+}
+
+/* --------------------------------------------------------------------------
+   Figures and diagrams
+   -------------------------------------------------------------------------- */
+
+.ed-figure {
+  position: relative;
+}
+
+.ed-figure__frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  border: 0;
+  background: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ed-figure__frame img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.ed-figure__inspect {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 220ms var(--ease), transform 220ms var(--ease);
+}
+
+.ed-figure__frame:hover .ed-figure__inspect,
+.ed-figure__frame:focus-visible .ed-figure__inspect {
+  opacity: 1;
+  transform: none;
+}
+
+.ed-figure__caption {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: var(--fg-soft);
+}
+
+.ed-figure__caption-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 70ch;
+}
+
+.ed-figure__caption strong {
+  display: block;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+}
+
+.ed-figure__caption-body > span {
+  max-width: 70ch;
+}
+
+.ed-figure__credit {
+  font-size: 9px;
+  opacity: 0.72;
+}
+
+.ed-figure.is-bleed {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+}
+
+.ed-figure.is-bleed .ed-figure__caption {
+  width: min(calc(100% - (var(--pad) * 2)), 1380px);
+  margin: 10px auto 0;
+}
+
+.ed-figure.is-bleed .ed-figure__frame img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.ed-diagram {
+  border: 1px solid var(--rule-c);
+  padding: 1rem;
+}
+
+.ed-diagram__label {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red-text);
+}
+
+.ed-diagram__type text,
+.ed-aircraft__callout text {
+  font-family: var(--f-mono);
+  font-size: 8px;
+  letter-spacing: 0.04em;
+}
+
+.ed-aircraft {
+  width: 100%;
+  height: auto;
+  color: currentColor;
+}
+
+.ed-aircraft__callout line {
+  stroke: currentColor;
+  stroke-width: 0.7;
+  opacity: 0.65;
+}
+
+.ed-briefcase {
+  width: 100%;
+  height: auto;
+  color: currentColor;
+}
+
+/* --------------------------------------------------------------------------
+   Overlays
+   -------------------------------------------------------------------------- */
+
+.ed-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  justify-content: center;
+  background: rgba(20, 19, 17, 0.58);
+}
+
+.ed-overlay__panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1180px;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.ed-overlay--drawer {
+  justify-content: flex-end;
+}
+
+.ed-overlay--drawer .ed-overlay__panel {
+  width: min(560px, 100%);
+  max-width: 560px;
+  border-left: 1px solid var(--rule);
+}
+
+.ed-overlay__head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 58px;
+  padding: 0 clamp(1rem, 3vw, 2rem);
+  padding-inline: clamp(1rem, 3vw, 2rem);
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+
+.ed-overlay__title {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ed-overlay__body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1.4rem, 3.4vw, 3.2rem) clamp(1rem, 3.4vw, 3rem) 4rem;
+}
+
+.ed-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--rule);
+  background: none;
+}
+
+.ed-icon-btn:hover {
+  background: var(--manila);
+}
+
+@supports not (background: color-mix(in srgb, red, blue)) {
+  .ed-overlay__panel {
+    background: var(--paper);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Motion — the scene layer lives in motion.css and motion.tsx.
+   -------------------------------------------------------------------------- */
+
+/* Hard-stop rules for the note sheet (functional ruling, not a decorative gradient). */
+.ed-note__sheet {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 33px,
+    rgba(20, 19, 17, 0.13) 33px,
+    rgba(20, 19, 17, 0.13) 34px
+  );
+  background-position: 0 2.9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .ed *,
+  .ed *::before,
+  .ed *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+}

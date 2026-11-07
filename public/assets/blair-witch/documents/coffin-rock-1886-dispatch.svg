@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1040" width="800" height="1040">
+  <rect width="800" height="1040" fill="#c7baa1"/>
+  <rect x="36" y="36" width="728" height="968" fill="none" stroke="#2a231c" stroke-width="2.5"/>
+  <g transform="translate(470, 56) rotate(-2)">
+    <rect x="0" y="0" width="270" height="44" fill="none" stroke="#8f241b" stroke-width="2.5"/>
+    <text x="135" y="19" font-family="monospace" font-size="10" font-weight="bold" fill="#8f241b" text-anchor="middle">RECONSTRUCTED FICTIONAL DOSSIER</text>
+    <text x="135" y="34" font-family="monospace" font-size="9" fill="#8f241b" text-anchor="middle">MARCH 1886 // COFFIN ROCK LORE</text>
+  </g>
+  <text x="80" y="95" font-family="monospace" font-size="12" fill="#3a3024">CASE FILE REF: ENIGMA-BW-1886-CR</text>
+  <text x="80" y="145" font-family="Georgia, serif" font-size="32" font-weight="bold" fill="#1a1510">THE COFFIN ROCK TOPOGRAPHY</text>
+  <text x="80" y="175" font-family="Georgia, serif" font-size="15" font-style="italic" fill="#3a3024">Fictional Search-Party Disappearance &amp; Tappy East Creek Outcrop (March 1886)</text>
+  <line x1="80" y1="196" x2="720" y2="196" stroke="#2a231c" stroke-width="1.5"/>
+  <!-- Topographical Contour & Outcrop Diagram -->
+  <g transform="translate(80, 224)">
+    <rect width="640" height="410" fill="#171614" stroke="#2a231c" stroke-width="2"/>
+    <!-- Contour lines -->
+    <g fill="none" stroke="#5a5244" stroke-width="1" stroke-dasharray="4 3">
+      <ellipse cx="320" cy="205" rx="280" ry="165"/>
+      <ellipse cx="320" cy="205" rx="220" ry="130"/>
+      <ellipse cx="320" cy="205" rx="160" ry="92"/>
+    </g>
+    <!-- Creek path -->
+    <path d="M 0,310 Q 180,260 320,320 T 640,285" fill="none" stroke="#4a6b5d" stroke-width="6" opacity="0.7"/>
+    <text x="510" y="275" font-family="monospace" font-size="11" fill="#7aa08f">SENECA / TAPPY EAST CREEK</text>
+    <!-- Coffin Rock Polygon -->
+    <polygon points="245,155 385,140 415,205 375,255 235,245 215,195" fill="#2c2823" stroke="#cbbda4" stroke-width="2.5"/>
+    <!-- 5 radial markers representing the fictional account -->
+    <g stroke="#b83a2e" stroke-width="2" fill="#b83a2e">
+      <circle cx="255" cy="170" r="5"/><circle cx="370" cy="160" r="5"/>
+      <circle cx="395" cy="205" r="5"/><circle cx="355" cy="240" r="5"/>
+      <circle cx="245" cy="230" r="5"/>
+      <line x1="255" y1="170" x2="315" y2="202" stroke-dasharray="3 3"/>
+      <line x1="370" y1="160" x2="315" y2="202" stroke-dasharray="3 3"/>
+      <line x1="395" y1="205" x2="315" y2="202" stroke-dasharray="3 3"/>
+      <line x1="355" y1="240" x2="315" y2="202" stroke-dasharray="3 3"/>
+      <line x1="245" y1="230" x2="315" y2="202" stroke-dasharray="3 3"/>
+    </g>
+    <text x="315" y="205" font-family="monospace" font-size="11" fill="#e6dfd3" text-anchor="middle">COFFIN ROCK OUTCROP</text>
+    <text x="24" y="385" font-family="monospace" font-size="11" fill="#a89e8c">FILMING REALITY: Shot along Seneca Creek State Park outcrop, Oct 1997</text>
+  </g>
+  <g font-family="Georgia, serif" font-size="14" fill="#231c15">
+    <text x="80" y="685">1. IN-UNIVERSE MYTHOLOGY (1886): Eight-year-old Robin Weaver vanishes into the Black Hills.</text>
+    <text x="80" y="710">   While Weaver returns three days later speaking of an old woman floating above the leaves,</text>
+    <text x="80" y="735">   a five-man search party is reportedly found bound upon Coffin Rock—only for the bodies to</text>
+    <text x="80" y="760">   disappear before the returning sheriff's posse reaches the creek.</text>
+    <text x="80" y="805">2. VERIFIED HISTORICAL FACT: No "Coffin Rock massacre" or "Robin Weaver disappearance"</text>
+    <text x="80" y="830">   ever occurred in 1886 Frederick County records. The geological rock formation shown in the</text>
+    <text x="80" y="855">   1999 film is a natural gneiss outcrop along Seneca Creek in Montgomery County, Maryland.</text>
+  </g>
+  <line x1="80" y1="895" x2="720" y2="895" stroke="#2a231c" stroke-width="1"/>
+  <text x="80" y="930" font-family="monospace" font-size="11" fill="#4a3e31">CLASSIFICATION: Category 5 — Reconstructed Fictional Lore &amp; Geographic Cross-Reference</text>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 760" width="520" height="760" role="img" aria-label="Reconstruction drawing of a black clip-on necktie">
+  <rect width="520" height="760" fill="#0d1012"/>
+  <g opacity="0.18" stroke="#e7e2d6" stroke-width="0.5">
+    <path d="M0 120H520M0 240H520M0 360H520M0 480H520M0 600H520"/>
+  </g>
+  <g transform="translate(260 90)">
+    <path d="M-46 0 L46 0 L54 34 L-54 34 Z" fill="#171b1d" stroke="#4a5153" stroke-width="1.2"/>
+    <path d="M-18 10 H18 V26 H-18 Z" fill="#0b0d0e" stroke="#5c6466" stroke-width="1"/>
+    <path d="M-34 34 L34 34 L54 250 L0 326 L-54 250 Z" fill="#111517" stroke="#5c6466" stroke-width="1.4"/>
+    <path d="M-22 60 L22 60 L31 236 L0 290 L-31 236 Z" fill="#0b0e10" opacity="0.7"/>
+    <path d="M0 326 L22 356 L14 560 L-14 560 L-22 356 Z" fill="#111517" stroke="#5c6466" stroke-width="1.3"/>
+    <path d="M-14 560 L14 560 L10 618 L-10 618 Z" fill="#0b0e10" stroke="#5c6466" stroke-width="1.1"/>
+    <path d="M-34 34 L-48 46 L-40 64 L-30 50" fill="none" stroke="#5c6466" stroke-width="1"/>
+    <path d="M34 34 L48 46 L40 64 L30 50" fill="none" stroke="#5c6466" stroke-width="1"/>
+  </g>
+  <g fill="#c08a4a" font-family="'Geist Mono', monospace" font-size="12" letter-spacing="1.4">
+    <text x="34" y="52">RECONSTRUCTION</text>
+    <text x="34" y="72" fill="#949086">BLACK CLIP-ON TIE · J.C. PENNEY</text>
+    <text x="34" y="712" fill="#949086">E-01 · SCALE INDICATIVE</text>
+  </g>
+</svg>
