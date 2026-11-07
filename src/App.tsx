@@ -1,4 +1,5 @@
 import React, { useEffect, useState, Suspense } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { ExperienceProvider } from './experience/ExperienceContext';
 import { Experience } from './experience/Experience';
 import Case002Experience from './cases/case-002-db-cooper/Case002Experience';
@@ -157,9 +158,12 @@ export default function App() {
       normalized === 'case-001-blair-witch';
     if (isBlairWitch) {
       return (
-        <ExperienceProvider>
-          <Experience />
-        </ExperienceProvider>
+        <>
+          <ExperienceProvider>
+            <Experience />
+          </ExperienceProvider>
+          <Analytics />
+        </>
       );
     }
 
@@ -172,11 +176,26 @@ export default function App() {
       normalized === 'cooper' ||
       normalized === 'case-002-db-cooper';
     if (isDbCooper) {
-      return <Case002Experience />;
+      return (
+        <>
+          <Case002Experience />
+          <Analytics />
+        </>
+      );
     }
 
-    return <DynamicCaseHost slug={caseSlug} />;
+    return (
+      <>
+        <DynamicCaseHost slug={caseSlug} />
+        <Analytics />
+      </>
+    );
   }
 
-  return <Home />;
+  return (
+    <>
+      <Home />
+      <Analytics />
+    </>
+  );
 }
