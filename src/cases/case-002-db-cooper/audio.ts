@@ -1,6 +1,13 @@
 import type { DbcAudioScene } from './content';
 import { SCENES } from './content';
-import { DBC_MUSIC_MAP, MUSIC_CUES, type DbcMusicCue, type DbcMusicTrack } from './music';
+import {
+  DBC_MUSIC_MAP,
+  MUSIC_CUES,
+  SCORE_THEMES,
+  type DbcMusicCue,
+  type DbcMusicTrack,
+  type DbcScoreTheme,
+} from './music';
 
 export interface DbcAudioSnapshot {
   enabled: boolean;
@@ -12,6 +19,9 @@ export interface DbcAudioSnapshot {
   trackId: string | null;
   trackTitle: string | null;
   trackArtist: string | null;
+  theme: DbcScoreTheme;
+  themeLabel: string;
+  cueIntent: string;
 }
 
 interface SceneProfile {
@@ -33,8 +43,9 @@ interface MusicDeck {
 /**
  * Procedural textures remain underneath the licensed score: a low drone,
  * filtered noise, and small mechanical events. The music decks are real files,
- * crossfaded on scene changes; the synthesised bed fills silence and gives the
- * jump its wind without turning the film into a trailer.
+ * carried across scene changes or crossfaded only when the theme changes; the
+ * synthesised bed fills silence and gives the jump its wind without turning the
+ * film into a trailer.
  */
 const PROFILES: Record<DbcAudioScene, SceneProfile> = {
   prologue: { root: 55, partials: [1, 1.5, 2.004, 3.01], noise: 0.055, cutoff: 420, pulse: 0, wave: 'sine' },
@@ -43,7 +54,7 @@ const PROFILES: Record<DbcAudioScene, SceneProfile> = {
   note: { root: 58, partials: [1, 1.335, 1.5, 2.01], noise: 0.018, cutoff: 1700, pulse: 0, wave: 'sine' },
   ground: { root: 52, partials: [1, 1.2, 1.5, 2.99], noise: 0.058, cutoff: 980, pulse: 1.7, wave: 'triangle' },
   'second-flight': { root: 44, partials: [1, 1.5, 2.005, 3.0], noise: 0.052, cutoff: 560, pulse: 1.15, wave: 'triangle' },
-  jump: { root: 38.5, partials: [1, 1.5, 2.006, 2.99], noise: 0.14, cutoff: 520, pulse: 0, wave: 'sine' },
+  jump: { root: 38.5, partials: [1, 1.5, 2.006, 2.99], noise: 0.085, cutoff: 520, pulse: 0, wave: 'sine' },
   silence: { root: 38.5, partials: [1], noise: 0.0, cutoff: 220, pulse: 0, wave: 'sine' },
   search: { root: 49, partials: [1, 1.414, 1.997, 3.0], noise: 0.05, cutoff: 900, pulse: 0, wave: 'sine' },
   money: { root: 65.4, partials: [1, 1.5, 2.0, 2.514], noise: 0.035, cutoff: 1500, pulse: 0, wave: 'sine' },
@@ -73,11 +84,17 @@ class DbcAudioEngine {
   private noiseGain: GainNode | null = null;
   private noiseFilter: BiquadFilterNode | null = null;
   private pulseTimer: number | null = null;
+  private scoreWatchdog: number | null = null;
+  private analyser: AnalyserNode | null = null;
+  private freqData: Uint8Array<ArrayBuffer> | null = null;
   private decks: MusicDeck[] = [];
   private activeDeck = 0;
   private currentTrack: string | null = null;
   private preloads = new Map<string, HTMLAudioElement>();
   private visibilityBound = false;
+  private lifecycleBound = false;
+  /** Incremented whenever playback is stopped so in-flight play() calls cannot restart a deck. */
+  private playSession = 0;
   private subscribers = new Set<(state: DbcAudioSnapshot) => void>();
 
   private state: DbcAudioSnapshot = {
@@ -90,6 +107,9 @@ class DbcAudioEngine {
     trackId: null,
     trackTitle: null,
     trackArtist: null,
+    theme: 'silence',
+    themeLabel: SCORE_THEMES.silence.label,
+    cueIntent: SCORE_THEMES.silence.note,
   };
 
   subscribe(callback: (state: DbcAudioSnapshot) => void) {
@@ -100,6 +120,41 @@ class DbcAudioEngine {
 
   getSnapshot(): DbcAudioSnapshot {
     return { ...this.state };
+  }
+
+  /**
+   * Live spectral levels for the sound panel's glyph scope. Bins are weighted
+   * towards the low end so the score's body is legible, not just its air.
+   * Returns silence when audio is closed, which flattens the scope to a line.
+   */
+  getLevels(bins = 32): number[] {
+    const levels = new Array<number>(bins).fill(0);
+    if (!this.analyser || !this.ctx || !this.state.enabled) return levels;
+    const data =
+      this.freqData ?? new Uint8Array(new ArrayBuffer(this.analyser.frequencyBinCount));
+    this.freqData = data;
+    this.analyser.getByteFrequencyData(data);
+    const count = data.length;
+    for (let bin = 0; bin < bins; bin += 1) {
+      const from = Math.floor(count * Math.pow(bin / bins, 2));
+      const to = Math.max(from + 1, Math.floor(count * Math.pow((bin + 1) / bins, 2)));
+      let sum = 0;
+      let total = 0;
+      for (let index = from; index < to && index < count; index += 1) {
+        sum += data[index];
+        total += 1;
+      }
+      levels[bin] = total ? Math.min(1, sum / total / 170) : 0;
+    }
+    return levels;
+  }
+
+  /** Playhead for the current cue, for the sound panel's time readout. */
+  getTrackTime(): { current: number; duration: number } {
+    const deck = this.decks[this.activeDeck];
+    if (!deck || !this.currentTrack) return { current: 0, duration: 0 };
+    const duration = Number.isFinite(deck.el.duration) ? deck.el.duration : 0;
+    return { current: Number.isFinite(deck.el.currentTime) ? deck.el.currentTime : 0, duration };
   }
 
   private notify() {
@@ -120,7 +175,11 @@ class DbcAudioEngine {
 
     this.master = ctx.createGain();
     this.master.gain.value = 0.0001;
-    this.master.connect(ctx.destination);
+    this.analyser = ctx.createAnalyser();
+    this.analyser.fftSize = 512;
+    this.analyser.smoothingTimeConstant = 0.82;
+    this.master.connect(this.analyser);
+    this.analyser.connect(ctx.destination);
 
     this.score = ctx.createGain();
     this.score.gain.value = 0.34;
@@ -196,7 +255,24 @@ class DbcAudioEngine {
     }
 
     this.bindVisibility();
+    this.bindLifecycle();
+    this.startScoreWatchdog();
     return ctx;
+  }
+
+  /**
+   * Leaving the documentary must silence the score even if the React tree is
+   * kept alive by the browser (bfcache, history restoration) or a route handler
+   * runs before the component unmount cleanup. The app dispatches
+   * `enigma:leave-case`; `pagehide`/`beforeunload` cover full navigations.
+   */
+  private bindLifecycle() {
+    if (this.lifecycleBound) return;
+    this.lifecycleBound = true;
+    const silence = () => this.stop();
+    window.addEventListener('pagehide', silence);
+    window.addEventListener('beforeunload', silence);
+    window.addEventListener('enigma:leave-case', silence);
   }
 
   private bindVisibility() {
@@ -212,7 +288,7 @@ class DbcAudioEngine {
       if (!this.state.enabled) return;
       void this.ctx.resume();
       const deck = this.decks[this.activeDeck];
-      if (this.currentTrack && deck?.el.paused) void deck.el.play().catch(() => undefined);
+      if (this.currentTrack && deck?.el.paused) this.playDeck(deck);
     });
   }
 
@@ -221,7 +297,7 @@ class DbcAudioEngine {
   }
 
   private preloadTrack(trackId: string | null) {
-    if (!trackId || this.preloads.has(trackId)) return;
+    if (!trackId || trackId === this.currentTrack || this.preloads.has(trackId)) return;
     const track = DBC_MUSIC_MAP[trackId];
     if (!track) return;
     if (this.preloads.size >= 3) {
@@ -270,6 +346,43 @@ class DbcAudioEngine {
     }
   }
 
+  /**
+   * Play a deck and re-pause it if playback was stopped before the element
+   * finished starting. Without this guard a pending play() could resolve after
+   * stop() and leave a track running on the main page.
+   */
+  private playDeck(deck: MusicDeck) {
+    const session = this.playSession;
+    void deck.el.play().then(
+      () => {
+        if (session !== this.playSession || !this.state.enabled) deck.el.pause();
+      },
+      () => undefined,
+    );
+  }
+
+  /**
+   * A current cue must never fall silent because the reader stays on a section:
+   * every scored cue loops, and if the browser ends a file or pauses the deck
+   * (audio-focus interruption, long backgrounding) the deck is restarted.
+   */
+  private startScoreWatchdog() {
+    if (this.scoreWatchdog !== null) return;
+    this.scoreWatchdog = window.setInterval(() => this.keepScoreAlive(), 2000);
+  }
+
+  private keepScoreAlive() {
+    if (!this.ctx || !this.state.enabled || document.hidden) return;
+    if (this.ctx.state === 'suspended') void this.ctx.resume();
+    const cue = MUSIC_CUES[this.state.scene];
+    if (!cue?.track || !cue.loop || cue.track !== this.currentTrack) return;
+    const deck = this.decks[this.activeDeck];
+    if (!deck || !deck.el.src) return;
+    deck.el.loop = true;
+    if (deck.el.ended) deck.el.currentTime = 0;
+    if (deck.el.paused) this.playDeck(deck);
+  }
+
   private rampDeck(deck: MusicDeck, target: number, fade: number) {
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
@@ -308,7 +421,8 @@ class DbcAudioEngine {
       const deck = this.decks[this.activeDeck];
       if (!deck) return;
       this.clearStop(deck);
-      if (deck.el.paused) void deck.el.play().catch(() => undefined);
+      deck.el.loop = cue.loop;
+      if (deck.el.paused) this.playDeck(deck);
       this.rampDeck(deck, cue.gain, Math.min(fadeIn, 2.5));
       return;
     }
@@ -324,7 +438,7 @@ class DbcAudioEngine {
     this.setDeckTrack(nextDeck, track, cue);
     nextDeck.gain.gain.cancelScheduledValues(this.ctx.currentTime);
     nextDeck.gain.gain.setValueAtTime(0.0001, this.ctx.currentTime);
-    void nextDeck.el.play().catch(() => undefined);
+    this.playDeck(nextDeck);
     this.rampDeck(nextDeck, cue.gain, fadeIn);
 
     if (oldDeck && oldDeck !== nextDeck) this.fadeOutDeck(oldDeck, fadeOut);
@@ -378,6 +492,7 @@ class DbcAudioEngine {
 
   /** Stop playback when leaving the documentary; the context is reused on return. */
   stop() {
+    this.playSession += 1;
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
     this.state.enabled = false;
@@ -385,12 +500,17 @@ class DbcAudioEngine {
     this.state.trackId = null;
     this.state.trackTitle = null;
     this.state.trackArtist = null;
+    this.state.theme = 'silence';
+    this.state.themeLabel = SCORE_THEMES.silence.label;
+    this.state.cueIntent = SCORE_THEMES.silence.note;
     this.master?.gain.cancelScheduledValues(now);
-    this.master?.gain.setTargetAtTime(0.0001, now, 0.18);
+    this.master?.gain.setValueAtTime(Math.max(this.master.gain.value, 0.0001), now);
+    this.master?.gain.linearRampToValueAtTime(0.0001, now + 0.4);
     this.decks.forEach((deck) => {
       this.clearStop(deck);
       deck.gain.gain.cancelScheduledValues(now);
-      deck.gain.gain.setTargetAtTime(0.0001, now, 0.12);
+      deck.gain.gain.setValueAtTime(Math.max(deck.gain.gain.value, 0.0001), now);
+      deck.gain.gain.linearRampToValueAtTime(0.0001, now + 0.2);
       deck.el.pause();
       deck.el.currentTime = 0;
       deck.trackId = null;
@@ -437,10 +557,14 @@ class DbcAudioEngine {
     const cue = MUSIC_CUES[scene];
     const track = cue?.track ? DBC_MUSIC_MAP[cue.track] : null;
 
+    const theme = cue?.theme ?? 'silence';
     this.state.scene = scene;
     this.state.trackId = track?.id ?? null;
     this.state.trackTitle = track?.title ?? null;
     this.state.trackArtist = track?.artist ?? null;
+    this.state.theme = theme;
+    this.state.themeLabel = SCORE_THEMES[theme].label;
+    this.state.cueIntent = cue?.intent ?? SCORE_THEMES[theme].note;
 
     if (this.ctx && this.state.enabled && cue) {
       this.updateProcedural(scene, fade ?? 4);
@@ -453,7 +577,9 @@ class DbcAudioEngine {
 
   /**
    * Scroll-linked continuous modulation of the procedural drone and wind filter
-   * for active scenes (`flight`, `second-flight`, and `jump` -> `silence` drop).
+   * for active scenes (`flight`, `second-flight`, and the `jump` wind drop).
+   * Only the procedural bed drops at the jump: the licensed score keeps running
+   * from the top of the chapter, through the record, and across the search.
    */
   modulateSceneProgress(scene: DbcAudioScene, rawProgress: number) {
     if (!this.ctx || !this.state.enabled || this.state.muted) return;
@@ -464,6 +590,8 @@ class DbcAudioEngine {
 
     if (scene === 'jump') {
       if (progress >= 0.68) {
+        // The wind falls away past the aft stairs, but the music cue is left
+        // running so the chapter and the search share one continuous take.
         this.filter?.frequency.setTargetAtTime(180, now, 0.25);
         this.noiseGain?.gain.setTargetAtTime(0.0001, now, 0.22);
         this.voices.forEach((voice) => {
@@ -472,13 +600,15 @@ class DbcAudioEngine {
         return;
       }
       const norm = clamp(progress / 0.68, 0, 1);
-      const windCutoff = 420 + norm * 1030; // 420 Hz -> 1450 Hz as aft stairs open
-      const windGain = 0.065 + norm * 0.145;
+      // Wind stays a bed under the score: darker and well below the music level
+      // so the aft stairs are felt rather than announced.
+      const windCutoff = 380 + norm * 600; // 380 Hz -> 980 Hz as aft stairs open
+      const windGain = 0.038 + norm * 0.058;
       this.noiseFilter?.frequency.setTargetAtTime(windCutoff, now, 0.08);
       this.noiseGain?.gain.setTargetAtTime(windGain, now, 0.08);
-      this.filter?.frequency.setTargetAtTime(480 + norm * 420, now, 0.08);
+      this.filter?.frequency.setTargetAtTime(460 + norm * 320, now, 0.08);
       this.voices.forEach((voice, index) => {
-        const level = index === 0 ? 0.09 + norm * 0.04 : 0.02 + norm * 0.015;
+        const level = index === 0 ? 0.055 + norm * 0.02 : 0.013 + norm * 0.008;
         voice.gain.gain.setTargetAtTime(level, now, 0.1);
       });
       return;

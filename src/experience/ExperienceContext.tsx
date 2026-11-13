@@ -54,6 +54,10 @@ export const ExperienceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   useEffect(() => audioManager.subscribe(setAudio), []);
 
+  // Leaving the case must silence its score; otherwise it keeps playing on the
+  // main page after the experience unmounts.
+  useEffect(() => () => audioManager.disableAudio(), []);
+
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');

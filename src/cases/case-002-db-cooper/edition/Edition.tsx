@@ -7,6 +7,7 @@ import {
   VolumeX,
 } from 'lucide-react';
 import { DbcContext, useDbc, type DbcContextValue } from '../context';
+import { EnigmaSymbol } from '../../../components/enigma/EnigmaBrand';
 import { dbcAudio, type DbcAudioSnapshot } from '../audio';
 import { DBC_ASSETS, DBC_ASSET_MAP } from '../assets';
 import { DBC_SOURCES } from '../sources';
@@ -24,6 +25,8 @@ import { TheNamed } from './TheNamed';
 import { Theories } from './Theories';
 import { WhatRemains } from './WhatRemains';
 import { Overlay, imageSources } from './ui';
+import { Case002Opener } from './Case002Opener';
+import { SoundPanel } from './SoundPanel';
 import { useEditionMotion } from './motion';
 import './edition.css';
 
@@ -78,7 +81,9 @@ function Masthead({
 
   return (
     <header className="ed-mast">
-      <a className="ed-mast__brand" href="/" aria-label="ENIGMA, home">ENIGMA</a>
+      <a className="ed-mast__brand" href="/" aria-label="ENIGMA, home">
+        <EnigmaSymbol tone="dark" className="enigma-nav-mark" />
+      </a>
       <span className="ed-mast__case">CASE 002 · NORJAK</span>
       <span className="ed-mast__chapter" key={active.id}>
         <span>{active.number}</span>
@@ -320,13 +325,15 @@ function SourcePanel() {
         {tab === 'music' && (
           <div className="ed-source-panel__list">
             <p className="ed-source-panel__intro">
-              Sound is opt-in. The licensed score is mixed under a procedural ambience; each credit
-              line is the attribution requested by the composer.
+              Sound is opt-in. The licensed score is mixed under a procedural ambience and carried
+              across movements rather than restarted at every chapter. Tracks marked Reserve are
+              licensed material held outside the current cut. Each credit line is the attribution
+              requested by the composer.
             </p>
             {music.map((track) => (
               <article key={track.id} className="ed-source-panel__source">
                 <div className="ed-source-panel__source-top">
-                  <span>{track.id.toUpperCase()}</span>
+                  <span>{track.usage.startsWith('Reserve') ? 'Reserve' : track.id.toUpperCase()}</span>
                   <span>{track.license}</span>
                 </div>
                 <h3>{track.title}</h3>
@@ -389,77 +396,6 @@ function AssetViewer() {
         </div>
       )}
     </Overlay>
-  );
-}
-
-function SoundPanel() {
-  const {
-    soundOpen,
-    setSoundOpen,
-    audio,
-    enableAudio,
-    toggleMuted,
-    setMasterVolume,
-    setScoreVolume,
-    setAmbienceVolume,
-  } = useDbc();
-
-  useEffect(() => {
-    if (!soundOpen) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        setSoundOpen(false);
-      }
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [soundOpen, setSoundOpen]);
-
-  if (!soundOpen) return null;
-
-  return (
-    <div className="ed-sound" role="dialog" aria-label="Sound">
-      <div className="ed-sound__head">
-        <span>Sound</span>
-        <button type="button" onClick={() => setSoundOpen(false)} aria-label="Close sound panel">Close</button>
-      </div>
-      {!audio.enabled ? (
-        <>
-          <p className="ed-sound__note">
-            The score is opt-in and starts only when you ask. Motion and sound are independent.
-          </p>
-          <button type="button" className="ed-sound__enable" onClick={enableAudio}>
-            <Volume2 size={15} strokeWidth={1.6} aria-hidden /> Enable sound
-          </button>
-        </>
-      ) : (
-        <>
-          <p className="ed-sound__cue">
-            <span>{audio.trackTitle ?? 'Procedural ambience'}</span>
-            <small>{audio.trackArtist ?? 'No music cue in this movement'}</small>
-          </p>
-          <label>
-            <span>Master <b>{Math.round(audio.masterVolume * 100)}</b></span>
-            <input type="range" min="0" max="1" step="0.01" value={audio.masterVolume}
-              onChange={(event) => setMasterVolume(Number(event.target.value))} />
-          </label>
-          <label>
-            <span>Score <b>{Math.round(audio.scoreVolume * 100)}</b></span>
-            <input type="range" min="0" max="1" step="0.01" value={audio.scoreVolume}
-              onChange={(event) => setScoreVolume(Number(event.target.value))} />
-          </label>
-          <label>
-            <span>Ambience <b>{Math.round(audio.ambienceVolume * 100)}</b></span>
-            <input type="range" min="0" max="1" step="0.01" value={audio.ambienceVolume}
-              onChange={(event) => setAmbienceVolume(Number(event.target.value))} />
-          </label>
-          <button type="button" className="ed-sound__mute" onClick={toggleMuted}>
-            {audio.muted ? 'Unmute' : 'Mute'} <span aria-hidden>{audio.muted ? '○' : '●'}</span>
-          </button>
-        </>
-      )}
-    </div>
   );
 }
 
@@ -621,6 +557,7 @@ export default function Edition() {
         ref={rootRef}
         className={`ed ${reducedMotion ? 'is-reduced' : 'is-motion'}`}
       >
+        <Case002Opener />
         <a className="ed-skip" href="#ed-main">Skip to the documentary</a>
         <span className="ed-frame" aria-hidden />
         <Masthead active={active} progressRef={progressRef} />
