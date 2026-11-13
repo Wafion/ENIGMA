@@ -49,7 +49,7 @@ export function Footer() {
           Sources and assets
         </button>
         <span>Set in Instrument Serif, Newsreader, Instrument Sans and Geist Mono.</span>
-        <span>© 2026 ENIGMA · editorial project</span>
+        <span>© 2026 ENIGMA · Independent digital archive</span>
       </div>
     </footer>
   );

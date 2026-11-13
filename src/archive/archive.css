@@ -1,0 +1,68 @@
+/* -------------------------------------------------------------------------- */
+/* ENIGMA — archive index                                                      */
+/* -------------------------------------------------------------------------- */
+
+.archive-masthead__title {
+  justify-self: center;
+  color: var(--home-ink);
+  font-size: 0.74rem;
+  letter-spacing: 0.24em;
+}
+
+.archive-catalogue {
+  border-top: 0;
+  padding-top: clamp(3.5rem, 9vh, 7rem);
+}
+
+.archive-head h2 {
+  max-width: 16ch;
+}
+
+.archive-title {
+  grid-column: 2;
+  max-width: 16ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 6.2rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.home .archive-case {
+  grid-template-columns: 2.6rem minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.archive-case__body {
+  max-width: 72ch;
+}
+
+.archive-case__classification {
+  display: block;
+  margin-top: 0.8rem;
+  color: var(--home-faint);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+}
+
+.archive-case .home-case__meta {
+  margin-top: 0.45rem;
+}
+
+.archive-footer {
+  margin-top: clamp(2rem, 6vh, 5rem);
+}
+
+@media (max-width: 900px) {
+  .archive-title {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .home .archive-case {
+    grid-template-areas: 'no body enter';
+  }
+}

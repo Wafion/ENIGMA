@@ -13,7 +13,6 @@ const TAXONOMY = ['Folklore', 'Media History', 'Place & Memory', 'The Unexplaine
 const TICKER = [
   'Case 001 — The Blair Witch Incident',
   'Case 002 — The Cooper File',
-  'Flight 305, 24 November 1971',
   'Published MMXXVI',
   'Two cases open',
 ];
@@ -153,11 +152,12 @@ function CircularBadge() {
   );
 }
 
-function TickerRun({ hidden = false }: { hidden?: boolean }) {
+function TickerRun({ hidden = false, repeat = 1 }: { hidden?: boolean; repeat?: number }) {
+  const items = Array.from({ length: repeat }, () => TICKER).flat();
   return (
     <ul className="home-ticker__run" aria-hidden={hidden || undefined}>
-      {TICKER.map((item) => (
-        <li key={item} className="mono">
+      {items.map((item, index) => (
+        <li key={`${item}-${index}`} className="mono">
           <span aria-hidden="true">+</span>
           {item}
         </li>
@@ -169,7 +169,6 @@ function TickerRun({ hidden = false }: { hidden?: boolean }) {
 export function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [eggOpen, setEggOpen] = useState(false);
-  const [redactionOpen, setRedactionOpen] = useState(false);
   const [yearPinned, setYearPinned] = useState(false);
   const searchButtonRef = useRef<HTMLButtonElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
@@ -253,7 +252,7 @@ export function Home() {
       <header className="home-masthead">
         <nav className="home-masthead__nav home-masthead__nav--start" aria-label="Primary">
           <a href="#catalogue">Discover</a>
-          <a href="/case/001">Archive</a>
+          <a href="/archive">Archive</a>
         </nav>
 
         <button
@@ -320,7 +319,7 @@ export function Home() {
 
             <p className="home-hero__status mono">
               <span className="home-hero__status-dot" aria-hidden="true" />
-              <span>Case 001 — The Blair Witch Incident — now showing</span>
+              <span>Case 001 — The Blair Witch Incident — open</span>
             </p>
 
             <ul className="home-hero__taxonomy" aria-label="Archive scope">
@@ -344,8 +343,8 @@ export function Home() {
             <p className="home-hero__ticker-label mono">Latest</p>
             <div className="home-hero__ticker-viewport">
               <div className="home-hero__ticker-track">
-                <TickerRun />
-                <TickerRun hidden />
+                <TickerRun repeat={4} />
+                <TickerRun hidden repeat={4} />
               </div>
             </div>
           </div>
@@ -375,35 +374,39 @@ export function Home() {
               </span>
 
               <span className="home-case__media">
-                <img
-                  src="/assets/blair-witch/images/seneca-creek-woods.jpg"
-                  alt="Late-October hardwood forest in Seneca Creek State Park, Maryland"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="home-case__scan" aria-hidden="true" />
-                <span className="home-case__readout mono" aria-hidden="true">
-                  <span>Frame 001</span>
-                  <span>Seneca Creek · 39°17′N</span>
+                <span className="home-case__frame">
+                  <img
+                    src="/assets/blair-witch/images/seneca-creek-woods.jpg"
+                    alt="Late-October hardwood forest in Seneca Creek State Park, Maryland"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="home-case__scan" aria-hidden="true" />
+                  <span className="home-case__readout mono" aria-hidden="true">
+                    <span>Frame 001</span>
+                    <span>Seneca Creek · 39°17′N</span>
+                  </span>
                 </span>
-                <span className="home-case__credit mono">Photo: randomduck · CC BY-SA 2.0</span>
+                <span className="home-case__credit mono">
+                  Photo: randomduck ·{' '}
+                  <span className="home-case__license">CC BY-SA 2.0</span>
+                </span>
               </span>
 
               <span className="home-case__body">
                 <span className="home-case__status">
-                  <span className="home-case__status-dot" aria-hidden="true" />Now showing
+                  <span className="home-case__status-dot" aria-hidden="true" />Open
                 </span>
                 <span className="home-case__title">The Blair Witch Incident</span>
                 <span className="home-case__desc">
                   How a folklore was built, sold as a record, and filmed in the real woods of
                   Maryland.
                 </span>
-              </span>
-
-              <span className="home-case__meta mono">
-                <span>Prologue + seven chapters</span>
-                <span>18 min</span>
-                <span>2026</span>
+                <span className="home-case__meta mono">
+                  <span>Prologue + seven chapters</span>
+                  <span>18 min</span>
+                  <span>2026</span>
+                </span>
               </span>
 
               <span className="home-case__enter" aria-hidden="true">
@@ -423,37 +426,39 @@ export function Home() {
               </span>
 
               <span className="home-case__media">
-                <img
-                  src="/assets/db-cooper/images/northwest-727-n467us-1972.jpg"
-                  alt="Northwest Orient Boeing 727-51, registration N467US, photographed in 1972"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="home-case__scan" aria-hidden="true" />
-                <span className="home-case__readout mono" aria-hidden="true">
-                  <span>Frame 002</span>
-                  <span>Flight 305 · 45°57′N</span>
+                <span className="home-case__frame">
+                  <img
+                    src="/assets/db-cooper/images/northwest-727-n467us-1972.jpg"
+                    alt="Northwest Orient Boeing 727-51, registration N467US, photographed in 1972"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="home-case__scan" aria-hidden="true" />
+                  <span className="home-case__readout mono" aria-hidden="true">
+                    <span>Frame 002</span>
+                    <span>Flight 305 · 45°57′N</span>
+                  </span>
                 </span>
                 <span className="home-case__credit mono">
-                  Photo: Clint Groves · GFDL 1.2
+                  Photo: Clint Groves ·{' '}
+                  <span className="home-case__license">GFDL 1.2</span>
                 </span>
               </span>
 
               <span className="home-case__body">
                 <span className="home-case__status">
-                  <span className="home-case__status-dot" aria-hidden="true" />Now showing
+                  <span className="home-case__status-dot" aria-hidden="true" />Open
                 </span>
                 <span className="home-case__title">The Cooper File</span>
                 <span className="home-case__desc">
                   A ticket under a false name, a Boeing 727 into the dark, and fifty years of
                   looking for a man who may not have survived the jump.
                 </span>
-              </span>
-
-              <span className="home-case__meta mono">
-                <span>Sixteen movements</span>
-                <span>28 min</span>
-                <span>2026</span>
+                <span className="home-case__meta mono">
+                  <span>Sixteen movements</span>
+                  <span>28 min</span>
+                  <span>2026</span>
+                </span>
               </span>
 
               <span className="home-case__enter" aria-hidden="true">
@@ -545,8 +550,8 @@ export function Home() {
             </p>
             <h2 id="about-title">The stories we mistake for history.</h2>
             <p className="home-section-lede">
-              ENIGMA is a documentary exhibition. Each case follows one narrative from its first
-              telling to the evidence it left behind, and stops wherever the record stops.
+              ENIGMA is an independent digital archive. Each case follows one narrative from its
+              first telling to the evidence it left behind, and stops wherever the record stops.
             </p>
           </div>
 
@@ -557,26 +562,9 @@ export function Home() {
               cannot be verified, the case says so rather than filling the gap.
             </p>
             <p>
-              Case 001, <em>The Blair Witch Incident</em>, is{' '}
-              <button
-                type="button"
-                className="home-redaction"
-                data-open={redactionOpen ? 'true' : 'false'}
-                aria-expanded={redactionOpen}
-                onClick={() => setRedactionOpen((open) => !open)}
-              >
-                <span className="home-redaction__text">the only published case</span>
-                <span className="home-redaction__bar" aria-hidden="true" />
-                <span className="visually-hidden">
-                  {redactionOpen ? ' — cleared, activate to redact' : ' — redacted, activate to reveal'}
-                </span>
-              </button>
-              <span className="home-redaction__tag mono" aria-hidden="true">
-                <span>Redacted</span>
-                <span>Cleared</span>
-              </span>{' '}
-              — the next slot remains open until a subject and its sources can carry the weight of a
-              case.
+              Two cases are open: <em>The Blair Witch Incident</em> and <em>The Cooper File</em>.
+              Both are published in full — sources, licences, contradictions and all — and the
+              archive grows only when a subject and its evidence can carry the weight of a case.
             </p>
 
             <div className="home-about__trace mono" aria-hidden="true">
@@ -584,7 +572,7 @@ export function Home() {
               <pre className="home-about__trace-box">
                 {`+---------------------------+
 |  [x]  source  . verified  |
-|  [ ]  claim   . unverified|
+|  [ ]  claim  . unverified |
 |  [~]  gap     . kept open |
 +---------------------------+`}
               </pre>
@@ -600,14 +588,14 @@ export function Home() {
         <div className="home-footer__meta mono" data-reveal="out">
           <span data-decode>04 — End matter</span>
           <span className="home-footer__meta-rule" aria-hidden="true" />
-          <span aria-hidden="true">Independent documentary exhibition · MMXXVI</span>
+          <span aria-hidden="true">Independent digital archive · MMXXVI</span>
         </div>
 
         <div className="home-footer__grid" data-reveal="out">
           <div className="home-footer__brand">
             <p className="home-footer__line">
-              An independent documentary exhibition. Each case follows one story from its first
-              telling to the evidence it left behind.
+              An independent digital archive. Each case follows one story from its first telling to
+              the evidence it left behind.
             </p>
             <a className="home-footer__cta" href="/case/001">
               Enter Case 001
@@ -615,13 +603,14 @@ export function Home() {
             </a>
             <p className="home-footer__status mono">
               <span className="home-footer__status-dot" aria-hidden="true" />
-              Case 001 open · Case 002 now showing
+              Case 001 open · Case 002 open
             </p>
           </div>
 
           <nav className="home-footer__col" aria-label="Footer">
             <p className="home-footer__col-title mono">Sections</p>
             <a href="#catalogue">Cases</a>
+            <a href="/archive">Archive</a>
             <a href="#method">Method</a>
             <a href="#about">About</a>
           </nav>
@@ -665,7 +654,7 @@ export function Home() {
         </a>
 
         <div className="home-footer__bottom mono" data-reveal="out">
-          <span>© 2026 ENIGMA · Editorial project</span>
+          <span>© 2026 ENIGMA · Independent digital archive</span>
           <span aria-hidden="true">All sources named</span>
           <a className="home-footer__top-link" href="#home-title">
             Back to top

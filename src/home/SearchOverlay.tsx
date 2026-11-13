@@ -1,87 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowUpRight, Search, X } from 'lucide-react';
+import { getPublishedCaseManifests } from '../core/registry/caseRegistry';
 
 type Entry = {
-  group: 'Case 001' | 'This site';
+  group: string;
   title: string;
   detail: string;
   href: string;
 };
 
-const ENTRIES: Entry[] = [
-  {
-    group: 'Case 001',
-    title: 'The Blair Witch Incident',
-    detail: 'The complete case — prologue and seven chapters',
-    href: '/case/001',
-  },
-  {
-    group: 'Case 001',
-    title: 'Prologue',
-    detail: 'A documentary in eight movements',
-    href: '/case/001',
-  },
-  {
-    group: 'Case 001',
-    title: 'The Legend of the Black Hills',
-    detail: 'Chapter 01',
-    href: '/case/001#chapter-01-the-legend',
-  },
-  {
-    group: 'Case 001',
-    title: 'The Town Below South Mountain',
-    detail: 'Chapter 02',
-    href: '/case/001#chapter-02-the-town',
-  },
-  {
-    group: 'Case 001',
-    title: 'October 1994: The Student Expedition',
-    detail: 'Chapter 03',
-    href: '/case/001#chapter-03-the-disappearance',
-  },
-  {
-    group: 'Case 001',
-    title: 'The Woods: An Unstable Geometry',
-    detail: 'Chapter 04',
-    href: '/case/001#chapter-04-the-woods',
-  },
-  {
-    group: 'Case 001',
-    title: 'The Recordings: 16mm Celluloid & Hi8 Magnetic Tape',
-    detail: 'Chapter 05',
-    href: '/case/001#chapter-05-the-recordings',
-  },
-  {
-    group: 'Case 001',
-    title: 'The Real Story: Method Filmmaking & The 1999 Internet Mirage',
-    detail: 'Chapter 06',
-    href: '/case/001#chapter-06-the-real-story',
-  },
-  {
-    group: 'Case 001',
-    title: 'What Remains: Aftermath in the Quiet Archive',
-    detail: 'Chapter 07',
-    href: '/case/001#chapter-07-what-remains',
-  },
-  {
-    group: 'This site',
-    title: 'Catalogue',
-    detail: 'Cases, in the order they were opened',
-    href: '/#catalogue',
-  },
-  {
-    group: 'This site',
-    title: 'Method',
-    detail: 'How a myth is separated from its evidence',
-    href: '/#method',
-  },
-  {
-    group: 'This site',
-    title: 'About',
-    detail: 'What ENIGMA is, and what it refuses to do',
-    href: '/#about',
-  },
-];
+const ENTRIES: Entry[] = getPublishedCaseManifests().map((manifest) => ({
+  group: `Case ${manifest.caseNumber}`,
+  title: manifest.title,
+  detail: manifest.subtitle,
+  href: `/case/${manifest.slug}`,
+}));
 
 type SearchOverlayProps = {
   open: boolean;
@@ -174,7 +107,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
       >
         <div className="home-search__head">
           <h2 id="home-search-title" className="home-search__title mono">
-            Search the archive
+            Search cases
           </h2>
           <button type="button" className="home-search__close" onClick={onClose}>
             <X size={15} strokeWidth={1.5} aria-hidden="true" />
@@ -184,12 +117,12 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
         <label className="home-search__field">
           <Search size={16} strokeWidth={1.4} aria-hidden="true" />
-          <span className="visually-hidden">Search cases and chapters</span>
+          <span className="visually-hidden">Search cases</span>
           <input
             ref={inputRef}
             type="search"
             value={query}
-            placeholder="Cases, chapters, sections…"
+            placeholder="Case title, number, subject…"
             autoComplete="off"
             spellCheck={false}
             onChange={(event) => setQuery(event.target.value)}
@@ -217,7 +150,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
           </ul>
         ) : (
           <p className="home-search__empty">
-            Nothing in the open record matches “{query.trim()}”. Only Case 001 is published.
+            No case matches “{query.trim()}”. The archive only indexes the cases themselves.
           </p>
         )}
       </div>
