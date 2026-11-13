@@ -1,6 +1,7 @@
 import { ARCHIVE_PROSE, EVIDENCE, EPILOGUE_PROSE, MAN_FACTS, MONEY_PROSE, SUSPECTS, TIMELINE, UNKNOWNS, type EvidenceStatus } from '../content';
 import { DBC_ASSETS } from '../assets';
 import { DBC_SOURCES } from '../sources';
+import { EnigmaLockup } from '../../../components/enigma/EnigmaBrand';
 import { AssetFigure, Chapter, ChapterHead, Cited, Prose, Status } from './ui';
 
 const STATUS_DEFS: Array<{ status: EvidenceStatus; definition: string }> = [
@@ -181,6 +182,9 @@ export function WhatRemains() {
           </div>
 
           <footer className="ed-register__foot">
+            <a className="ed-register__brand" href="/" aria-label="ENIGMA, home">
+              <EnigmaLockup className="enigma-closing-lockup" />
+            </a>
             <span>ENIGMA · CASE 002 / NORJAK</span>
             <span>Research and production file · 2026</span>
             <span>This documentary is an editorial reconstruction of the public record, not an official finding.</span>

@@ -11,6 +11,7 @@ import { useExperience } from '../ExperienceContext';
 import { CHAPTERS } from '../content';
 import { BLAIR_WITCH_ASSETS, BLAIR_WITCH_SOURCES } from '../../data/blairWitchAssets';
 import { Dialog } from './primitives';
+import { EnigmaSymbol } from '../../components/enigma/EnigmaBrand';
 
 /* -------------------------------------------------------------------------- */
 /* Masthead                                                                    */
@@ -82,7 +83,7 @@ export function Masthead() {
     <header className="masthead">
       <div className="masthead__inner">
         <a className="wordmark" href="/" aria-label="ENIGMA, home">
-          ENIGMA
+          <EnigmaSymbol tone="light" className="enigma-nav-mark" />
         </a>
         <p className="masthead__case" aria-hidden={!active}>
           <span>Case 001</span>

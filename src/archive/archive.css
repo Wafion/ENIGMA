@@ -2,6 +2,11 @@
 /* ENIGMA — archive index                                                      */
 /* -------------------------------------------------------------------------- */
 
+.home-masthead__nav a.archive-brand::before,
+.home-masthead__nav a.archive-brand::after {
+  content: none;
+}
+
 .archive-masthead__title {
   justify-self: center;
   color: var(--home-ink);

@@ -1853,37 +1853,26 @@ a.home-case:hover .home-case__enter svg {
 }
 
 .home-footer__signature {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-inline: calc(var(--pad) * -1);
-  padding-inline: var(--pad);
-  overflow: hidden;
+  padding: clamp(2.5rem, 6vh, 4.25rem) var(--pad);
   border-top: 1px solid var(--home-rule);
   text-decoration: none;
   color: var(--home-ink);
 }
 
-.home-footer__sig-line {
-  display: block;
-  margin-top: clamp(0.9rem, 2.5vh, 1.6rem);
-  font-family: var(--font-display);
-  font-size: clamp(4.8rem, 31vw, 50rem);
-  font-weight: 400;
-  line-height: 0.72;
-  letter-spacing: 0.002em;
-  white-space: nowrap;
-  transform: translateY(0.04em);
+.home-footer__outro-mark {
+  width: clamp(3.5rem, 5.5vw, 4.75rem);
+  aspect-ratio: 1 / 1;
+  opacity: 0.88;
+  transition: opacity 260ms ease;
 }
 
-.home-footer__glyph {
-  display: inline-block;
-  transition:
-    transform 540ms var(--ease-out) calc(var(--i) * 38ms),
-    opacity 300ms ease calc(var(--i) * 24ms);
-}
-
-.home-footer__signature:hover .home-footer__glyph,
-.home-footer__signature:focus-visible .home-footer__glyph {
-  transform: translateY(-0.055em);
+.home-footer__signature:hover .home-footer__outro-mark,
+.home-footer__signature:focus-visible .home-footer__outro-mark {
+  opacity: 1;
 }
 
 .home-footer__bottom {
@@ -2552,9 +2541,7 @@ a.home-case:hover .home-case__enter svg {
     grid-column: auto;
   }
 
-  .home-footer__sig-line {
-    font-size: clamp(4.2rem, 30.8vw, 15rem);
-  }
+
 
   .home-footer__bottom {
     flex-direction: column;

@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react';
 import { useDbc } from './context';
+import { EnigmaSymbol } from '../../components/enigma/EnigmaBrand';
 import { SCENES } from './content';
 import { DBC_ASSETS, DBC_ASSET_MAP } from './assets';
 import { DBC_SOURCES } from './sources';
@@ -136,7 +137,7 @@ export function Masthead() {
   return (
     <header className="dbc-mast">
       <a className="dbc-mast__brand" href="/" aria-label="ENIGMA, home">
-        ENIGMA
+        <EnigmaSymbol tone="light" className="enigma-nav-mark" />
       </a>
       <p className="dbc-mast__case">
         <span>CASE 002</span>
@@ -209,8 +210,8 @@ function SoundPanel() {
       {!audio.enabled ? (
         <>
           <p className="dbc-sound__copy">
-            A licensed score and an environmental bed, cued by movement. Nothing plays until you ask
-            for it.
+            A licensed score and an environmental bed, carried across the investigation. Nothing
+            plays until you ask for it.
           </p>
           <button type="button" className="dbc-btn dbc-btn--solid" onClick={enableAudio}>
             Enable sound
@@ -223,10 +224,11 @@ function SoundPanel() {
             <strong>{audio.trackTitle ?? 'No music in this movement'}</strong>
             <span>
               {audio.trackTitle
-                ? `${audio.trackArtist} · ${(audio.trackId && DBC_MUSIC_MAP[audio.trackId]?.license) || 'CC BY 4.0'}`
-                : 'Ambience and field textures continue.'}
+                ? `${audio.trackArtist} · ${(audio.trackId && DBC_MUSIC_MAP[audio.trackId]?.license) || 'CC BY 4.0'} · ${audio.themeLabel}`
+                : `Ambience and field textures continue · ${audio.themeLabel}`}
             </span>
           </div>
+          <p className="dbc-sound__note">{audio.cueIntent}</p>
           <div className="dbc-sound__row">
             <button type="button" className="dbc-btn dbc-btn--solid" onClick={toggleMuted}>
               {audio.muted ? 'Unmute' : 'Mute'}
@@ -247,7 +249,7 @@ function SoundPanel() {
             <span>Ambience <b>{Math.round(audio.ambienceVolume * 100)}</b></span>
             <input type="range" min="0" max="1" step="0.05" value={audio.ambienceVolume} onChange={(e) => setAmbienceVolume(Number(e.target.value))} />
           </label>
-          <p className="dbc-sound__note">Score by LEMMiNO (CC BY-SA 4.0) and Scott Buckley (CC BY 4.0), crossfaded per movement. The bed suspends when the tab is hidden. Full credits are in the register.</p>
+          <p className="dbc-sound__note">Score by LEMMiNO (CC BY-SA 4.0) and Scott Buckley (CC BY 4.0), carried across movements rather than restarted at every chapter. The bed suspends when the tab is hidden. Full credits are in the register.</p>
         </>
       )}
     </div>
@@ -411,14 +413,17 @@ export function SourcePanel() {
       ) : tab === 'music' ? (
         <div className="dbc-register__list" role="tabpanel">
           <p className="dbc-register__intro">
-            The licensed score, cue by cue. Tracks by LEMMiNO (CC BY-SA 4.0) and Scott Buckley
-            (CC BY 4.0) are looped and mixed under the documentary’s procedural ambience. Each credit
-            line is the attribution requested by the composer.
+            The licensed score, carried rather than restarted. Tracks by LEMMiNO (CC BY-SA 4.0) and
+            Scott Buckley (CC BY 4.0) are looped and mixed under the documentary’s procedural
+            ambience; entries marked Reserve are held outside the current cut. Each credit line is
+            the attribution requested by the composer.
           </p>
           {music.map((track) => (
             <article className="dbc-music-credit" key={track.id}>
               <div className="dbc-source__top">
-                <span className="dbc-source__code">{track.id.toUpperCase()}</span>
+                <span className="dbc-source__code">
+                  {track.usage.startsWith('Reserve') ? 'RESERVE' : track.id.toUpperCase()}
+                </span>
                 <span className="dbc-source__cat">{track.license}</span>
               </div>
               <h3>{track.title}</h3>

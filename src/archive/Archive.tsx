@@ -1,4 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
+import { EnigmaSymbol } from '../components/enigma/EnigmaBrand';
 import { getPublishedCaseManifests } from '../core/registry/caseRegistry';
 import '../home/home.css';
 import './archive.css';
@@ -14,7 +15,9 @@ export function Archive() {
 
       <header className="home-masthead archive-masthead">
         <nav className="home-masthead__nav home-masthead__nav--start" aria-label="Primary">
-          <a href="/">ENIGMA</a>
+          <a className="archive-brand" href="/" aria-label="ENIGMA, home">
+            <EnigmaSymbol tone="light" className="enigma-nav-mark" />
+          </a>
         </nav>
 
         <p className="archive-masthead__title mono">Archive</p>
@@ -84,6 +87,10 @@ export function Archive() {
           <span className="home-footer__meta-rule" aria-hidden="true" />
           <span>All cases</span>
         </div>
+
+        <a className="home-footer__signature" href="/" aria-label="ENIGMA, home">
+          <EnigmaSymbol tone="light" className="home-footer__outro-mark" />
+        </a>
 
         <div className="home-footer__bottom mono">
           <span>© 2026 ENIGMA · Independent digital archive</span>

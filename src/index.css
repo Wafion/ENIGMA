@@ -3189,7 +3189,7 @@ cite {
 .site-footer__top {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
   max-width: 108rem;

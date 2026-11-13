@@ -1,5 +1,6 @@
 import { ArrowUp } from 'lucide-react';
 import { useExperience } from '../ExperienceContext';
+import { EnigmaLockup } from '../../components/enigma/EnigmaBrand';
 
 export function Footer() {
   const { openSources } = useExperience();
@@ -7,7 +8,7 @@ export function Footer() {
     <footer className="site-footer">
       <div className="site-footer__top">
         <a className="wordmark wordmark--footer" href="/" aria-label="ENIGMA, home">
-          ENIGMA
+          <EnigmaLockup className="enigma-closing-lockup" />
         </a>
         <p className="site-footer__case">Case 001 · The Blair Witch Incident</p>
         <a className="footer-top" href="#top">

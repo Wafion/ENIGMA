@@ -1,19 +1,44 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { EnigmaSymbol } from '../../components/enigma/EnigmaBrand';
 
 const DENSE_GLYPHS = ['@', '%', '#', 'W', 'M', '8', '&', '$', '0'];
 const MID_GLYPHS = ['*', '+', '=', '-', '~', 'X', 'Z', 'Y', '1', '7', '<', '>'];
 const LIGHT_GLYPHS = [':', '.', '·', '/', '\\', '|', ';', '!', '^', "'", ','];
 const ALL_GLYPHS = [...DENSE_GLYPHS, ...MID_GLYPHS, ...LIGHT_GLYPHS];
 
-const TELEMETRY_SNIPPETS = [
-  'CASE // 001',
-  'BURKITTSVILLE // MD',
-  'RECORD_RESTORED',
-  'SENECA_CREEK_OCT94',
-  '16MM_SYNC_STABLE',
-  'DECODING_LAYER',
-  'STATUS: VERIFIED',
-];
+export interface CaseAsciiOpenerTheme {
+  imageSrc: string;
+  telemetry: string[];
+  denseRgb: string;
+  midRgb: string;
+  lightRgb: string;
+  inkRgb: string;
+  groundRgb: string;
+  fontFamily: string;
+  sound: boolean;
+  historyFromMelt: boolean;
+}
+
+const CASE_001_THEME: CaseAsciiOpenerTheme = {
+  imageSrc: '/assets/blair-witch/images/seneca-creek-woods.jpg',
+  telemetry: [
+    'CASE // 001',
+    'BURKITTSVILLE // MD',
+    'RECORD_RESTORED',
+    'SENECA_CREEK_OCT94',
+    '16MM_SYNC_STABLE',
+    'DECODING_LAYER',
+    'STATUS: VERIFIED',
+  ],
+  denseRgb: '239, 232, 220',
+  midRgb: '200, 184, 136',
+  lightRgb: '138, 132, 120',
+  inkRgb: '239, 232, 220',
+  groundRgb: '8, 7, 6',
+  fontFamily: '"Geist Mono Variable", "Geist Mono", monospace',
+  sound: true,
+  historyFromMelt: true,
+};
 
 interface VerticalLayer {
   x: number;
@@ -87,7 +112,15 @@ function playDecodeSound() {
   }
 }
 
-export function CaseAsciiOpener() {
+interface CaseAsciiOpenerProps {
+  theme?: Partial<CaseAsciiOpenerTheme>;
+}
+
+export function CaseAsciiOpener({ theme: themeOverrides }: CaseAsciiOpenerProps = {}) {
+  const theme = useMemo(
+    () => ({ ...CASE_001_THEME, ...themeOverrides }),
+    [themeOverrides],
+  );
   const [active, setActive] = useState(() => {
     // Check if triggered by the melt transition or session flag
     const flag = sessionStorage.getItem('enigma:case-ascii-open');
@@ -96,7 +129,7 @@ export function CaseAsciiOpener() {
       return true;
     }
     // Also check window history state
-    if (typeof window !== 'undefined' && window.history.state?.fromMelt) {
+    if (theme.historyFromMelt && typeof window !== 'undefined' && window.history.state?.fromMelt) {
       return true;
     }
     return false;
@@ -117,7 +150,7 @@ export function CaseAsciiOpener() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    playDecodeSound();
+    if (theme.sound) playDecodeSound();
 
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     const width = window.innerWidth;
@@ -154,7 +187,7 @@ export function CaseAsciiOpener() {
         }
       }
     };
-    sampleImg.src = '/assets/blair-witch/images/seneca-creek-woods.jpg';
+    sampleImg.src = theme.imageSrc;
 
     // Build vertical layers (columns)
     const numLayers = Math.min(32, Math.max(18, Math.round(width / 52)));
@@ -201,11 +234,11 @@ export function CaseAsciiOpener() {
       // Base dark ground that recedes as the case decodes
       const groundAlpha = Math.max(0, 1 - Math.min(1, Math.max(0, (elapsed - 450) / 750)));
       if (groundAlpha > 0.01) {
-        ctx.fillStyle = `rgba(8, 7, 6, ${groundAlpha.toFixed(3)})`;
+        ctx.fillStyle = `rgba(${theme.groundRgb}, ${groundAlpha.toFixed(3)})`;
         ctx.fillRect(0, 0, width, height);
       }
 
-      ctx.font = `600 12px "Geist Mono Variable", "Geist Mono", monospace`;
+      ctx.font = `600 12px ${theme.fontFamily}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
@@ -242,7 +275,7 @@ export function CaseAsciiOpener() {
         // A. Draw thin vertical strip separator rule
         const ruleAlpha = Math.max(0, (1 - layer.decodeProgress) * 0.22);
         if (ruleAlpha > 0.01) {
-          ctx.strokeStyle = `rgba(239, 232, 220, ${ruleAlpha.toFixed(3)})`;
+          ctx.strokeStyle = `rgba(${theme.inkRgb}, ${ruleAlpha.toFixed(3)})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(layer.x + layer.width, 0);
@@ -283,19 +316,19 @@ export function CaseAsciiOpener() {
           ctx.save();
           const beamWidth = layer.width;
           const beamGrad = ctx.createLinearGradient(layer.x, scanY, layer.x + beamWidth, scanY);
-          beamGrad.addColorStop(0, 'rgba(239, 232, 220, 0.15)');
-          beamGrad.addColorStop(0.5, 'rgba(239, 232, 220, 0.85)');
-          beamGrad.addColorStop(1, 'rgba(239, 232, 220, 0.15)');
+          beamGrad.addColorStop(0, `rgba(${theme.inkRgb}, 0.15)`);
+          beamGrad.addColorStop(0.5, `rgba(${theme.inkRgb}, 0.85)`);
+          beamGrad.addColorStop(1, `rgba(${theme.inkRgb}, 0.15)`);
 
           ctx.fillStyle = beamGrad;
-          ctx.shadowColor = 'rgba(239, 232, 220, 0.8)';
+          ctx.shadowColor = `rgba(${theme.inkRgb}, 0.8)`;
           ctx.shadowBlur = 10;
           ctx.fillRect(layer.x, scanY - 2, beamWidth, 4);
 
           // Stamped telemetry glyph at the decode scan front
-          ctx.fillStyle = '#efe8dc';
+          ctx.fillStyle = `rgb(${theme.inkRgb})`;
           ctx.shadowBlur = 0;
-          ctx.font = `700 10px "Geist Mono Variable", "Geist Mono", monospace`;
+          ctx.font = `700 10px ${theme.fontFamily}`;
           const g = DENSE_GLYPHS[(l + Math.floor(elapsed * 0.04)) % DENSE_GLYPHS.length];
           ctx.fillText(g, layer.x + layer.width / 2, scanY);
           ctx.restore();
@@ -332,13 +365,13 @@ export function CaseAsciiOpener() {
         let glyph = '.';
         if (lum > 0.68) {
           glyph = DENSE_GLYPHS[(seed + Math.floor(timeMs * 0.01)) % DENSE_GLYPHS.length];
-          targetCtx.fillStyle = `rgba(239, 232, 220, ${(baseAlpha * 0.98).toFixed(3)})`;
+          targetCtx.fillStyle = `rgba(${theme.denseRgb}, ${(baseAlpha * 0.98).toFixed(3)})`;
         } else if (lum > 0.38) {
           glyph = MID_GLYPHS[(seed + Math.floor(timeMs * 0.008)) % MID_GLYPHS.length];
-          targetCtx.fillStyle = `rgba(200, 184, 136, ${(baseAlpha * 0.82).toFixed(3)})`;
+          targetCtx.fillStyle = `rgba(${theme.midRgb}, ${(baseAlpha * 0.82).toFixed(3)})`;
         } else {
           glyph = LIGHT_GLYPHS[(seed + Math.floor(timeMs * 0.006)) % LIGHT_GLYPHS.length];
-          targetCtx.fillStyle = `rgba(138, 132, 120, ${(baseAlpha * 0.55).toFixed(3)})`;
+          targetCtx.fillStyle = `rgba(${theme.lightRgb}, ${(baseAlpha * 0.55).toFixed(3)})`;
         }
 
         targetCtx.fillText(glyph, x, y);
@@ -347,12 +380,12 @@ export function CaseAsciiOpener() {
       // 4. Decode status ribbon across bottom during reconstruction
       if (progress > 0.15 && progress < 0.78) {
         ctx.save();
-        const snippetIdx = Math.floor((elapsed * 0.006) % TELEMETRY_SNIPPETS.length);
-        const snippet = TELEMETRY_SNIPPETS[snippetIdx];
-        ctx.font = `600 11px "Geist Mono Variable", "Geist Mono", monospace`;
+        const snippetIdx = Math.floor((elapsed * 0.006) % theme.telemetry.length);
+        const snippet = theme.telemetry[snippetIdx];
+        ctx.font = `600 11px ${theme.fontFamily}`;
         ctx.letterSpacing = '0.22em';
         const ribbonAlpha = Math.sin(progress * Math.PI) * 0.65;
-        ctx.fillStyle = `rgba(239, 232, 220, ${ribbonAlpha.toFixed(3)})`;
+        ctx.fillStyle = `rgba(${theme.inkRgb}, ${ribbonAlpha.toFixed(3)})`;
         ctx.fillText(`+ [ DECODING RECORD // ${snippet} ] +`, width / 2, height - 36);
         ctx.restore();
       }
@@ -373,7 +406,7 @@ export function CaseAsciiOpener() {
         window.cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [active]);
+  }, [active, theme]);
 
   if (!active) return null;
 
@@ -398,6 +431,13 @@ export function CaseAsciiOpener() {
           height: '100%',
         }}
       />
+      <div className="enigma-transition-mark">
+        <EnigmaSymbol
+          tone="light"
+          className="enigma-transition-mark__img"
+          priority
+        />
+      </div>
     </div>
   );
 }

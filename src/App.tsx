@@ -6,6 +6,7 @@ import Case002Experience from './cases/case-002-db-cooper/Case002Experience';
 import { Home } from './home/Home';
 import { Archive } from './archive/Archive';
 import { resolveCase, getCaseComponent } from './core/registry/caseRegistry';
+import { EnigmaLoader } from './components/enigma/EnigmaBrand';
 
 function normalizePath(pathname: string) {
   const trimmed = pathname.replace(/\/+$/, '');
@@ -37,6 +38,19 @@ function forceScrollTop() {
   root.style.scrollBehavior = previous;
 }
 
+function isCase002Slug(slug: string | null) {
+  if (!slug) return false;
+  const normalized = slug.trim().toLowerCase();
+  return (
+    normalized === '002' ||
+    normalized === 'case-002' ||
+    normalized === 'db-cooper' ||
+    normalized === 'dbcooper' ||
+    normalized === 'cooper' ||
+    normalized === 'case-002-db-cooper'
+  );
+}
+
 interface DynamicCaseHostProps {
   slug: string;
 }
@@ -45,21 +59,71 @@ function DynamicCaseHost({ slug }: DynamicCaseHostProps) {
   const TargetComponent = getCaseComponent(slug);
   if (!TargetComponent) return null;
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#0a0d11] flex items-center justify-center font-mono text-xs text-[#8c4a32] uppercase tracking-widest">
-          Initializing Documentary Archive...
-        </div>
-      }
-    >
+    <Suspense fallback={<EnigmaLoader />}>
       {React.createElement(TargetComponent, { slug })}
     </Suspense>
   );
 }
 
+function EnigmaBootCurtain({ initialTone }: { initialTone: 'dark' | 'light' }) {
+  const [phase, setPhase] = useState<'active' | 'leaving' | 'done'>('active');
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const minWait = reduced ? 200 : 1050;
+    const maxWait = 1800;
+    let leaveTimer = 0;
+    let doneTimer = 0;
+    let safetyTimer = 0;
+    const started = performance.now();
+
+    const fontsReady =
+      typeof document !== 'undefined' && 'fonts' in document
+        ? document.fonts.ready.catch(() => undefined)
+        : Promise.resolve();
+
+    const safetyTimeout = new Promise<void>((resolve) => {
+      safetyTimer = window.setTimeout(resolve, maxWait);
+    });
+
+    Promise.race([fontsReady, safetyTimeout]).then(() => {
+      if (signal.aborted) return;
+      const elapsed = performance.now() - started;
+      const remaining = Math.max(0, minWait - elapsed);
+      leaveTimer = window.setTimeout(() => {
+        if (signal.aborted) return;
+        setPhase('leaving');
+        doneTimer = window.setTimeout(() => {
+          if (!signal.aborted) setPhase('done');
+        }, reduced ? 180 : 380);
+      }, remaining);
+    });
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(safetyTimer);
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(doneTimer);
+    };
+  }, []);
+
+  if (phase === 'done') return null;
+
+  return <EnigmaLoader tone={initialTone} overlay leaving={phase === 'leaving'} />;
+}
+
 export default function App() {
   const [path, setPath] = useState(() => normalizePath(window.location.pathname));
   const wasCaseRef = useRef<boolean | null>(null);
+  const [initialTone] = useState<'dark' | 'light'>(() =>
+    isCase002Slug(normalizePath(window.location.pathname).match(/^\/case\/([^/]+)/)?.[1] ?? null)
+      ? 'light'
+      : 'dark',
+  );
 
   const caseMatch = path.match(/^\/case\/([^/]+)/);
   const caseSlug = caseMatch ? caseMatch[1] : null;
@@ -181,16 +245,10 @@ export default function App() {
     return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, [isCase, path]);
 
+  let page: React.ReactNode;
   if (isArchive) {
-    return (
-      <>
-        <Archive />
-        <Analytics />
-      </>
-    );
-  }
-
-  if (isCase && caseSlug) {
+    page = <Archive />;
+  } else if (isCase && caseSlug) {
     const normalized = caseSlug.trim().toLowerCase();
     // Render Case 001 (Blair Witch) directly
     const isBlairWitch =
@@ -199,44 +257,25 @@ export default function App() {
       normalized === 'case-001' ||
       normalized === 'case-001-blair-witch';
     if (isBlairWitch) {
-      return (
-        <>
-          <ExperienceProvider>
-            <Experience />
-          </ExperienceProvider>
-          <Analytics />
-        </>
+      page = (
+        <ExperienceProvider>
+          <Experience />
+        </ExperienceProvider>
       );
+    } else if (isCase002Slug(normalized)) {
+      // Render Case 002 (D.B. Cooper) directly to guarantee zero-latency & exact DOM
+      page = <Case002Experience />;
+    } else {
+      page = <DynamicCaseHost slug={caseSlug} />;
     }
-
-    // Render Case 002 (D.B. Cooper) directly to guarantee zero-latency & exact DOM
-    const isDbCooper =
-      normalized === '002' ||
-      normalized === 'case-002' ||
-      normalized === 'db-cooper' ||
-      normalized === 'dbcooper' ||
-      normalized === 'cooper' ||
-      normalized === 'case-002-db-cooper';
-    if (isDbCooper) {
-      return (
-        <>
-          <Case002Experience />
-          <Analytics />
-        </>
-      );
-    }
-
-    return (
-      <>
-        <DynamicCaseHost slug={caseSlug} />
-        <Analytics />
-      </>
-    );
+  } else {
+    page = <Home />;
   }
 
   return (
     <>
-      <Home />
+      <EnigmaBootCurtain initialTone={initialTone} />
+      {page}
       <Analytics />
     </>
   );

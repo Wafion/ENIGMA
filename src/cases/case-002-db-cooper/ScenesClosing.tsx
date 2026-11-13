@@ -23,6 +23,7 @@ import {
 } from './content';
 import { DBC_THEORY_STRESS_MATRIX } from './composition';
 import { useDbc } from './context';
+import { EnigmaLockup } from '../../components/enigma/EnigmaBrand';
 
 /* -------------------------------------------------------------------------- */
 /* 11 — The suspects                                                          */
@@ -685,6 +686,9 @@ export function TheEpilogue() {
           </div>
 
           <footer className="dbc-epilogue__footer">
+            <a href="/" aria-label="ENIGMA, home">
+              <EnigmaLockup className="enigma-closing-lockup" />
+            </a>
             <span>ENIGMA · MMXXVI</span>
             <span>Sound optional · Reconstructions labelled · Sources traceable</span>
           </footer>
@@ -774,9 +778,11 @@ export function TheSources() {
           <p className="dbc-sources__music-intro">
             Documentary score by LEMMiNO (licensed under Creative Commons Attribution-ShareAlike 4.0
             International, CC BY-SA 4.0) and Scott Buckley (licensed under Creative Commons
-            Attribution 4.0 International, CC BY 4.0). Tracks are looped, crossfaded, and mixed
-            beneath the procedural wind and cabin drone. Each entry below provides the full credit
-            and link to the original release and licence.
+            Attribution 4.0 International, CC BY 4.0). The score is carried across movements rather
+            than restarted at every chapter; tracks are looped, crossfaded, and mixed beneath the
+            procedural wind and cabin drone. Entries marked Reserve are licensed material held
+            outside the current cut. Each entry provides the full credit and link to the original
+            release and licence.
           </p>
           <ol>
             {DBC_MUSIC.map((track) => (

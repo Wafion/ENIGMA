@@ -1,7 +1,8 @@
 import { ArrowUpRight, Search } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArchiveEgg } from './ArchiveEgg';
 import { AsciiTerrain } from './AsciiTerrain';
+import { EnigmaSymbol } from '../components/enigma/EnigmaBrand';
 import { InkWordmark } from './InkWordmark';
 import { SearchOverlay } from './SearchOverlay';
 import { HeroAsciiLiquidMelt } from './HeroAsciiLiquidMelt';
@@ -16,8 +17,6 @@ const TICKER = [
   'Published MMXXVI',
   'Two cases open',
 ];
-
-const SIGNATURE = ['E', 'N', 'I', 'G', 'M', 'A'];
 
 const FOOTER_FACES = [
   { key: 'serif', name: 'Instrument Serif', sample: 'Aa' },
@@ -640,17 +639,7 @@ export function Home() {
           aria-label="ENIGMA, home"
           data-reveal="out"
         >
-          <span className="home-footer__sig-line" aria-hidden="true">
-            {SIGNATURE.map((letter, index) => (
-              <span
-                className="home-footer__glyph"
-                key={`${letter}-${index}`}
-                style={{ '--i': index } as CSSProperties}
-              >
-                {letter}
-              </span>
-            ))}
-          </span>
+          <EnigmaSymbol tone="light" className="home-footer__outro-mark" />
         </a>
 
         <div className="home-footer__bottom mono" data-reveal="out">
