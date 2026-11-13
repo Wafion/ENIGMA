@@ -3,7 +3,7 @@ import { dbCooperClimate } from './theme';
 
 export const DB_COOPER_MANIFEST: CaseManifest = {
   id: 'case-002-db-cooper',
-  slug: '002',
+  slug: 'db-cooper',
   caseNumber: '002',
   title: 'The Cooper File',
   subtitle: 'Flight 305, the ransom, and the man who stepped into the dark.',

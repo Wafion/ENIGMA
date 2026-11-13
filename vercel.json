@@ -1,12 +1,114 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/og/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.enigma.buzz"
+        }
+      ],
+      "destination": "https://enigma.buzz/:path",
+      "permanent": true
+    },
+    {
+      "source": "/case/001",
+      "destination": "/case/blair-witch",
+      "permanent": true
+    },
+    {
+      "source": "/case/case-001",
+      "destination": "/case/blair-witch",
+      "permanent": true
+    },
+    {
+      "source": "/case/case-001-blair-witch",
+      "destination": "/case/blair-witch",
+      "permanent": true
+    },
+    {
+      "source": "/case/001/:section",
+      "destination": "/case/blair-witch/:section",
+      "permanent": true
+    },
+    {
+      "source": "/case/002",
+      "destination": "/case/db-cooper",
+      "permanent": true
+    },
+    {
+      "source": "/case/case-002",
+      "destination": "/case/db-cooper",
+      "permanent": true
+    },
+    {
+      "source": "/case/cooper",
+      "destination": "/case/db-cooper",
+      "permanent": true
+    },
+    {
+      "source": "/case/dbcooper",
+      "destination": "/case/db-cooper",
+      "permanent": true
+    },
+    {
+      "source": "/case/case-002-db-cooper",
+      "destination": "/case/db-cooper",
+      "permanent": true
+    },
+    {
+      "source": "/case/002/:section",
+      "destination": "/case/db-cooper/:section",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
     {
       "source": "/api/:match*",
       "destination": "/api/:match*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
     }
   ]
 }

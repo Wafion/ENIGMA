@@ -185,9 +185,25 @@ export function WhatRemains() {
             <a className="ed-register__brand" href="/" aria-label="ENIGMA, home">
               <EnigmaLockup className="enigma-closing-lockup" />
             </a>
+            <nav
+              aria-label="Case 002 dossiers and archive links"
+              style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem 1.15rem' }}
+            >
+              <a href="/case/db-cooper/timeline">Timeline</a>
+              <a href="/case/db-cooper/evidence">Evidence</a>
+              <a href="/case/db-cooper/transcript">Transcript</a>
+              <a href="/case/db-cooper/sources">Sources</a>
+              <a href="/archive">Archive</a>
+              <a href="/case/blair-witch">Related: Case 001 (Blair Witch)</a>
+              <a href="/about">About ENIGMA</a>
+            </nav>
             <span>ENIGMA · CASE 002 / NORJAK</span>
             <span>Research and production file · 2026</span>
-            <span>This documentary is an editorial reconstruction of the public record, not an official finding.</span>
+            <span>
+              This documentary reconstructs the 1971 hijacking of Northwest Orient Flight 305, the $200,000 ransom
+              and parachute demands, and the 45-year FBI investigation into D.B. Cooper’s identity and
+              disappearance from the public record, not as an official finding.
+            </span>
           </footer>
         </div>
       </section>

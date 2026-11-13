@@ -11,14 +11,14 @@ export interface CaseRegistryEntry {
 
 // Canonical Static Registry — Case 001 (Blair Witch) & Case 002 (D.B. Cooper)
 const REGISTRY: Record<string, CaseRegistryEntry> = {
-  '001': {
+  'blair-witch': {
     manifest: BLAIR_WITCH_MANIFEST,
-    aliases: ['001', 'case-001', 'blair-witch', 'case-001-blair-witch'],
+    aliases: ['blair-witch', '001', 'case-001', 'case-001-blair-witch'],
     loader: () => import('../../cases/case-001-blair-witch/Case001Experience'),
   },
-  '002': {
+  'db-cooper': {
     manifest: DB_COOPER_MANIFEST,
-    aliases: ['002', 'case-002', 'db-cooper', 'dbcooper', 'cooper', 'case-002-db-cooper'],
+    aliases: ['db-cooper', '002', 'case-002', 'dbcooper', 'cooper', 'case-002-db-cooper'],
     loader: () => import('../../cases/case-002-db-cooper/Case002Experience'),
   },
 };

@@ -126,7 +126,7 @@ function CircularBadge() {
     <a
       ref={badgeRef}
       className="home-badge"
-      href="/case/001"
+      href="/case/blair-witch"
       aria-label="Enter Case 001 · The Blair Witch Incident"
     >
       <span className="home-badge__follow" aria-hidden="true">
@@ -197,7 +197,7 @@ export function Home() {
 
   const handleTriggerCase = useCallback(() => {
     sessionStorage.setItem('enigma:case-ascii-open', 'true');
-    window.history.pushState({ fromMelt: true }, '', '/case/001');
+    window.history.pushState({ fromMelt: true }, '', '/case/blair-witch');
     window.dispatchEvent(new PopStateEvent('popstate'));
   }, []);
 
@@ -364,7 +364,7 @@ export function Home() {
           <div className="home-cases">
             <a
               className="home-case"
-              href="/case/001"
+              href="/case/blair-witch"
               data-reveal="out"
               data-hover-scramble=""
             >
@@ -377,6 +377,8 @@ export function Home() {
                   <img
                     src="/assets/blair-witch/images/seneca-creek-woods.jpg"
                     alt="Late-October hardwood forest in Seneca Creek State Park, Maryland"
+                    width={1280}
+                    height={720}
                     loading="lazy"
                     decoding="async"
                   />
@@ -416,7 +418,7 @@ export function Home() {
 
             <a
               className="home-case"
-              href="/case/002"
+              href="/case/db-cooper"
               data-reveal="out"
               data-hover-scramble=""
             >
@@ -429,6 +431,8 @@ export function Home() {
                   <img
                     src="/assets/db-cooper/images/northwest-727-n467us-1972.jpg"
                     alt="Northwest Orient Boeing 727-51, registration N467US, photographed in 1972"
+                    width={1747}
+                    height={633}
                     loading="lazy"
                     decoding="async"
                   />
@@ -535,7 +539,7 @@ export function Home() {
 
           <p className="home-method__note mono" data-reveal="out">
             <span>Applied in full to Case 001 — The Blair Witch Incident.</span>
-            <a href="/case/001">
+            <a href="/case/blair-witch">
               Open the case
               <ArrowUpRight size={12} strokeWidth={1.5} aria-hidden="true" />
             </a>
@@ -563,7 +567,8 @@ export function Home() {
             <p>
               Two cases are open: <em>The Blair Witch Incident</em> and <em>The Cooper File</em>.
               Both are published in full — sources, licences, contradictions and all — and the
-              archive grows only when a subject and its evidence can carry the weight of a case.
+              archive grows only when a subject and its evidence can carry the weight of a case.{' '}
+              <a href="/about">Read full editorial identity &amp; sourcing methodology.</a>
             </p>
 
             <div className="home-about__trace mono" aria-hidden="true">
@@ -596,7 +601,7 @@ export function Home() {
               An independent digital archive. Each case follows one story from its first telling to
               the evidence it left behind.
             </p>
-            <a className="home-footer__cta" href="/case/001">
+            <a className="home-footer__cta" href="/case/blair-witch">
               Enter Case 001
               <ArrowUpRight size={14} strokeWidth={1.5} aria-hidden="true" />
             </a>
@@ -611,13 +616,13 @@ export function Home() {
             <a href="#catalogue">Cases</a>
             <a href="/archive">Archive</a>
             <a href="#method">Method</a>
-            <a href="#about">About</a>
+            <a href="/about">About ENIGMA</a>
           </nav>
 
           <div className="home-footer__col">
             <p className="home-footer__col-title mono">Case files</p>
-            <a href="/case/001">001 — Blair Witch</a>
-            <a href="/case/002">002 — The Cooper File</a>
+            <a href="/case/blair-witch">001 — Blair Witch</a>
+            <a href="/case/db-cooper">002 — The Cooper File</a>
           </div>
 
           <div className="home-footer__col home-footer__col--faces">

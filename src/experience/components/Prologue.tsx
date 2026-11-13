@@ -21,6 +21,8 @@ export function Prologue() {
           <img
             src="/assets/blair-witch/images/seneca-creek-woods.jpg"
             alt="A late-October hardwood forest in Seneca Creek State Park, Maryland, with pale trunks and a muted canopy."
+            width={1280}
+            height={720}
             fetchPriority="high"
             decoding="async"
           />

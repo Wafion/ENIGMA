@@ -3,7 +3,7 @@ import { blairWitchClimate } from './theme';
 
 export const BLAIR_WITCH_MANIFEST: CaseManifest = {
   id: 'case-001-blair-witch',
-  slug: '001',
+  slug: 'blair-witch',
   caseNumber: '001',
   title: 'The Blair Witch Incident',
   subtitle: 'How a folklore was built, sold as a record, and filmed in real Maryland woods.',

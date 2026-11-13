@@ -60,6 +60,42 @@
   margin-top: clamp(2rem, 6vh, 5rem);
 }
 
+.archive-entry {
+  border-bottom: 1px solid var(--home-rule);
+}
+
+.archive-entry .archive-case {
+  border-bottom: 0;
+}
+
+.archive-case__subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.35rem;
+  padding: 0 0 1.35rem 2.6rem;
+  color: var(--home-faint);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+}
+
+.archive-case__subnav a {
+  text-decoration: none;
+  border-bottom: 1px solid var(--home-rule);
+  padding-bottom: 0.12rem;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.archive-case__subnav a:hover {
+  color: var(--home-ink);
+  border-color: var(--home-ink);
+}
+
+@media (max-width: 640px) {
+  .archive-case__subnav {
+    padding-left: 0;
+  }
+}
+
 @media (max-width: 900px) {
   .archive-title {
     grid-column: 1;

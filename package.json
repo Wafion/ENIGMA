@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "tsx src/server/index.ts",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && tsx scripts/prerender-seo.ts",
     "lint": "oxlint",
     "preview": "vite preview",
     "case:create": "node scripts/enigma-pipeline.mjs case:create",

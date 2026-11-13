@@ -9,12 +9,52 @@ type Entry = {
   href: string;
 };
 
-const ENTRIES: Entry[] = getPublishedCaseManifests().map((manifest) => ({
-  group: `Case ${manifest.caseNumber}`,
-  title: manifest.title,
-  detail: manifest.subtitle,
-  href: `/case/${manifest.slug}`,
-}));
+const ENTRIES: Entry[] = [
+  ...getPublishedCaseManifests().flatMap((manifest) => [
+    {
+      group: `Case ${manifest.caseNumber}`,
+      title: manifest.title,
+      detail: manifest.subtitle,
+      href: `/case/${manifest.slug}`,
+    },
+    {
+      group: `Case ${manifest.caseNumber} · Dossier`,
+      title: `${manifest.title} — Timeline`,
+      detail: 'Chronology of documented events and key milestones.',
+      href: `/case/${manifest.slug}/timeline`,
+    },
+    {
+      group: `Case ${manifest.caseNumber} · Dossier`,
+      title: `${manifest.title} — Evidence`,
+      detail: 'Physical artefacts, records, theories, and evidentiary limits.',
+      href: `/case/${manifest.slug}/evidence`,
+    },
+    {
+      group: `Case ${manifest.caseNumber} · Dossier`,
+      title: `${manifest.title} — Transcript`,
+      detail: 'Primary document excerpts, logs, and recovered transcripts.',
+      href: `/case/${manifest.slug}/transcript`,
+    },
+    {
+      group: `Case ${manifest.caseNumber} · Dossier`,
+      title: `${manifest.title} — Sources`,
+      detail: 'Archival citations, primary repositories, and further reading.',
+      href: `/case/${manifest.slug}/sources`,
+    },
+  ]),
+  {
+    group: 'Archive',
+    title: 'All Open Cases',
+    detail: 'Browse the complete ENIGMA documentary index.',
+    href: '/archive',
+  },
+  {
+    group: 'Editorial',
+    title: 'About ENIGMA',
+    detail: 'Editorial philosophy, sourcing methodology, and publication credits.',
+    href: '/about',
+  },
+];
 
 type SearchOverlayProps = {
   open: boolean;

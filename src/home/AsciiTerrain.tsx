@@ -221,7 +221,16 @@ export function AsciiTerrain({ className }: { className?: string }) {
       }
     };
 
+    const visibility = {
+      inView: true,
+      docVisible: typeof document === 'undefined' || document.visibilityState === 'visible',
+    };
+
     const tick = (now: number) => {
+      if (!visibility.inView || !visibility.docVisible || reduced.matches) {
+        loop.raf = 0;
+        return;
+      }
       loop.raf = window.requestAnimationFrame(tick);
       if (!loop.last) loop.last = now;
       const delta = now - loop.last;
@@ -254,8 +263,14 @@ export function AsciiTerrain({ className }: { className?: string }) {
     const start = () => {
       if (loop.raf) window.cancelAnimationFrame(loop.raf);
       loop.last = 0;
-      loop.elapsed = 0;
-      if (!reduced.matches) loop.raf = window.requestAnimationFrame(tick);
+      if (!reduced.matches && visibility.inView && visibility.docVisible) {
+        loop.raf = window.requestAnimationFrame(tick);
+      }
+    };
+
+    const stop = () => {
+      if (loop.raf) window.cancelAnimationFrame(loop.raf);
+      loop.raf = 0;
     };
 
     const resizeFrame = { id: 0 };
@@ -269,11 +284,19 @@ export function AsciiTerrain({ className }: { className?: string }) {
 
     const onMotionChange = () => {
       if (reduced.matches) {
-        if (loop.raf) window.cancelAnimationFrame(loop.raf);
-        loop.raf = 0;
+        stop();
         draw();
       } else {
         start();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      visibility.docVisible = document.visibilityState === 'visible';
+      if (visibility.docVisible) {
+        start();
+      } else {
+        stop();
       }
     };
 
@@ -282,6 +305,20 @@ export function AsciiTerrain({ className }: { className?: string }) {
 
     const observer = new ResizeObserver(onResize);
     observer.observe(host);
+    const intersection = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        visibility.inView = entry ? entry.isIntersecting : true;
+        if (visibility.inView) {
+          start();
+        } else {
+          stop();
+        }
+      },
+      { threshold: 0.01 },
+    );
+    intersection.observe(host);
+    document.addEventListener('visibilitychange', onVisibilityChange);
     reduced.addEventListener('change', onMotionChange);
     document.fonts?.ready.then(() => {
       build();
@@ -290,7 +327,9 @@ export function AsciiTerrain({ className }: { className?: string }) {
 
     return () => {
       observer.disconnect();
-      if (loop.raf) window.cancelAnimationFrame(loop.raf);
+      intersection.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      stop();
       if (resizeFrame.id) window.cancelAnimationFrame(resizeFrame.id);
       reduced.removeEventListener('change', onMotionChange);
     };

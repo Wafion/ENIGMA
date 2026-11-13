@@ -42,10 +42,10 @@ export function Cover() {
 
       <div className="ed-cover__foot">
         <dl>
-          <div><dt>Flight</dt><dd>Northwest Orient 305</dd></div>
-          <div><dt>Route</dt><dd>Portland → Seattle</dd></div>
-          <div><dt>Ransom</dt><dd>$200,000</dd></div>
-          <div><dt>Status</dt><dd>Suspended, not closed</dd></div>
+          <div><dt>Flight</dt><dd>Northwest Orient Flight 305</dd></div>
+          <div><dt>Route</dt><dd>Portland → Seattle (1971 hijacking)</dd></div>
+          <div><dt>Ransom</dt><dd>$200,000 · Four parachutes</dd></div>
+          <div><dt>Status</dt><dd>FBI investigation suspended · Disappearance unresolved</dd></div>
         </dl>
         <a className="ed-cover__enter" href="#dbc-the-man">
           <span>Read the file</span>

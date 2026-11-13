@@ -43,11 +43,29 @@ export function Footer() {
         </div>
       </div>
       <div className="site-footer__bottom">
-        <a className="text-link" href="/">
+        <a className="text-link" href="/archive">
           All cases
         </a>
+        <a className="text-link" href="/case/blair-witch/timeline">
+          Timeline
+        </a>
+        <a className="text-link" href="/case/blair-witch/evidence">
+          Evidence
+        </a>
+        <a className="text-link" href="/case/blair-witch/transcript">
+          Transcript
+        </a>
+        <a className="text-link" href="/case/blair-witch/sources">
+          Sources dossier
+        </a>
+        <a className="text-link" href="/case/db-cooper">
+          Related: Case 002 (D.B. Cooper)
+        </a>
+        <a className="text-link" href="/about">
+          About ENIGMA
+        </a>
         <button type="button" className="text-link" onClick={() => openSources()}>
-          Sources and assets
+          Interactive register
         </button>
         <span>Set in Instrument Serif, Newsreader, Instrument Sans and Geist Mono.</span>
         <span>© 2026 ENIGMA · Independent digital archive</span>

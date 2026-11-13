@@ -1,0 +1,27 @@
+{
+  "name": "ENIGMA — Independent Documentary Archive",
+  "short_name": "ENIGMA",
+  "description": "Independent digital documentary platform investigating unsolved cases, historical mysteries, and modern folklore from primary records.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080706",
+  "theme_color": "#12110f",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/home/logo-1-light.png",
+      "sizes": "760x760",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

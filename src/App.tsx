@@ -1,27 +1,18 @@
-import React, { useEffect, useRef, useState, Suspense } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { ExperienceProvider } from './experience/ExperienceContext';
-import { Experience } from './experience/Experience';
-import Case002Experience from './cases/case-002-db-cooper/Case002Experience';
 import { Home } from './home/Home';
-import { Archive } from './archive/Archive';
-import { resolveCase, getCaseComponent } from './core/registry/caseRegistry';
+import { getCaseComponent } from './core/registry/caseRegistry';
 import { EnigmaLoader } from './components/enigma/EnigmaBrand';
+import { applyDocumentHead } from './seo/headManager';
+import { getRouteSeo, normalizePathname, parseAppRoute } from './seo/routes';
 
-function normalizePath(pathname: string) {
-  const trimmed = pathname.replace(/\/+$/, '');
-  return trimmed === '' ? '/' : trimmed;
-}
-
-function setMetaDescription(content: string) {
-  let tag = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-  if (!tag) {
-    tag = document.createElement('meta');
-    tag.name = 'description';
-    document.head.appendChild(tag);
-  }
-  tag.content = content;
-}
+const Archive = lazy(() => import('./archive/Archive').then((m) => ({ default: m.Archive })));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const CaseSupportingPage = lazy(() => import('./pages/CaseSupportingPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const Experience = lazy(() => import('./experience/Experience').then((m) => ({ default: m.Experience })));
+const Case002Experience = lazy(() => import('./cases/case-002-db-cooper/Case002Experience'));
 
 /**
  * Route changes swap the whole document without a reload, and the page sets
@@ -74,8 +65,8 @@ function EnigmaBootCurtain({ initialTone }: { initialTone: 'dark' | 'light' }) {
     const reduced =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const minWait = reduced ? 200 : 1050;
-    const maxWait = 1800;
+    const minWait = reduced ? 80 : 260;
+    const maxWait = 850;
     let leaveTimer = 0;
     let doneTimer = 0;
     let safetyTimer = 0;
@@ -99,7 +90,7 @@ function EnigmaBootCurtain({ initialTone }: { initialTone: 'dark' | 'light' }) {
         setPhase('leaving');
         doneTimer = window.setTimeout(() => {
           if (!signal.aborted) setPhase('done');
-        }, reduced ? 180 : 380);
+        }, reduced ? 120 : 280);
       }, remaining);
     });
 
@@ -117,24 +108,20 @@ function EnigmaBootCurtain({ initialTone }: { initialTone: 'dark' | 'light' }) {
 }
 
 export default function App() {
-  const [path, setPath] = useState(() => normalizePath(window.location.pathname));
+  const [path, setPath] = useState(() => normalizePathname(window.location.pathname));
   const wasCaseRef = useRef<boolean | null>(null);
-  const [initialTone] = useState<'dark' | 'light'>(() =>
-    isCase002Slug(normalizePath(window.location.pathname).match(/^\/case\/([^/]+)/)?.[1] ?? null)
-      ? 'light'
-      : 'dark',
-  );
+  const [initialTone] = useState<'dark' | 'light'>(() => {
+    const route = parseAppRoute(window.location.pathname);
+    return route.kind === 'case' && isCase002Slug(route.slug) ? 'light' : 'dark';
+  });
 
-  const caseMatch = path.match(/^\/case\/([^/]+)/);
-  const caseSlug = caseMatch ? caseMatch[1] : null;
-  const caseEntry = caseSlug ? resolveCase(caseSlug) : null;
-  const isCase = Boolean(caseEntry);
-  const isArchive = path === '/archive';
+  const route = useMemo(() => parseAppRoute(path), [path]);
+  const isCase = route.kind === 'case';
 
   useEffect(() => {
     const previous = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
-    const onPopState = () => setPath(normalizePath(window.location.pathname));
+    const onPopState = () => setPath(normalizePathname(window.location.pathname));
     window.addEventListener('popstate', onPopState);
     return () => {
       window.history.scrollRestoration = previous;
@@ -163,10 +150,10 @@ export default function App() {
       const url = new URL(anchor.href, window.location.href);
       if (url.origin !== window.location.origin) return;
 
-      const current = normalizePath(window.location.pathname);
-      const next = normalizePath(url.pathname);
+      const current = normalizePathname(window.location.pathname);
+      const next = normalizePathname(url.pathname);
 
-      if (current === next) {
+      if (current === next && url.search === window.location.search) {
         if (!url.hash && next === '/') {
           event.preventDefault();
           window.history.replaceState({}, '', '/');
@@ -176,16 +163,17 @@ export default function App() {
       }
 
       event.preventDefault();
-      if (next.startsWith('/case/') && !current.startsWith('/case/')) {
+      const targetRoute = parseAppRoute(next);
+      if (targetRoute.kind === 'case' && !isCase) {
         sessionStorage.setItem('enigma:case-ascii-open', 'true');
       }
-      window.history.pushState({}, '', `${url.pathname}${url.hash}`);
-      setPath(next);
+      window.history.pushState({}, '', `${targetRoute.path}${url.search}${url.hash}`);
+      setPath(targetRoute.path);
     };
 
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);
-  }, []);
+  }, [isCase]);
 
   // Leaving a case must silence any case score, even if the browser restores
   // the previous document from bfcache or a component cleanup is skipped.
@@ -196,34 +184,26 @@ export default function App() {
     wasCaseRef.current = isCase;
   }, [isCase]);
 
-  // Path validity check & URL normalization
+  // Canonicalize legacy alias slugs (e.g., /case/001 -> /case/blair-witch) in URL bar
   useEffect(() => {
-    if (!isCase && !isArchive && path !== '/' && path !== '') {
-      window.history.replaceState({}, '', '/');
-      setPath('/');
+    if ((route.kind === 'case' || route.kind === 'case-supporting') && route.path !== path) {
+      window.history.replaceState(
+        {},
+        '',
+        `${route.path}${window.location.search}${window.location.hash}`,
+      );
     }
-  }, [path, isCase, isArchive]);
+  }, [path, route]);
 
-  // Page title and meta description
+  // Synchronize per-route metadata, canonical link, Open Graph, Twitter, and JSON-LD
   useEffect(() => {
-    if (isCase && caseEntry) {
-      document.title = `ENIGMA — ${caseEntry.manifest.title}, Case ${caseEntry.manifest.caseNumber}`;
-      setMetaDescription(`ENIGMA Case ${caseEntry.manifest.caseNumber}: ${caseEntry.manifest.title}. ${caseEntry.manifest.shortDescription}`);
-    } else if (isArchive) {
-      document.title = 'ENIGMA — Archive';
-      setMetaDescription('The complete ENIGMA archive: every open case, listed in the order it was opened.');
-    } else {
-      document.title = 'ENIGMA — Documentary cases, traced from the record';
-      setMetaDescription('ENIGMA is an independent digital archive. Case 001, The Blair Witch Incident, traces how a modern folklore was built, sold as a record, and filmed in real Maryland woods.');
-    }
-  }, [isCase, caseEntry, isArchive]);
+    applyDocumentHead(getRouteSeo(route));
+  }, [route]);
 
-  // Entry scroll: cases open at the top unless a hash asks for a section.
+  // Entry scroll: routes open at the top unless a hash asks for a section.
   useEffect(() => {
-    if (!isCase || !window.location.hash) {
+    if (!window.location.hash) {
       forceScrollTop();
-      // One correction once the incoming case has laid out; a browser smooth
-      // scroll or scroll anchoring can otherwise leave the document mid-page.
       const frame = window.requestAnimationFrame(forceScrollTop);
       const timer = window.setTimeout(forceScrollTop, 120);
       return () => {
@@ -243,31 +223,51 @@ export default function App() {
       }, 1100),
     ];
     return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [isCase, path]);
+  }, [isCase, route.path]);
 
   let page: React.ReactNode;
-  if (isArchive) {
-    page = <Archive />;
-  } else if (isCase && caseSlug) {
-    const normalized = caseSlug.trim().toLowerCase();
-    // Render Case 001 (Blair Witch) directly
-    const isBlairWitch =
-      normalized === '001' ||
-      normalized === 'blair-witch' ||
-      normalized === 'case-001' ||
-      normalized === 'case-001-blair-witch';
-    if (isBlairWitch) {
+  if (route.kind === 'archive') {
+    page = (
+      <Suspense fallback={<EnigmaLoader tone="dark" />}>
+        <Archive />
+      </Suspense>
+    );
+  } else if (route.kind === 'about') {
+    page = (
+      <Suspense fallback={<EnigmaLoader tone="dark" />}>
+        <AboutPage />
+      </Suspense>
+    );
+  } else if (route.kind === 'case-supporting') {
+    page = (
+      <Suspense fallback={<EnigmaLoader tone="dark" />}>
+        <CaseSupportingPage slug={route.slug} section={route.section} />
+      </Suspense>
+    );
+  } else if (route.kind === 'case') {
+    if (route.slug === 'blair-witch') {
       page = (
-        <ExperienceProvider>
-          <Experience />
-        </ExperienceProvider>
+        <Suspense fallback={<EnigmaLoader tone="dark" />}>
+          <ExperienceProvider>
+            <Experience />
+          </ExperienceProvider>
+        </Suspense>
       );
-    } else if (isCase002Slug(normalized)) {
-      // Render Case 002 (D.B. Cooper) directly to guarantee zero-latency & exact DOM
-      page = <Case002Experience />;
+    } else if (route.slug === 'db-cooper') {
+      page = (
+        <Suspense fallback={<EnigmaLoader tone="light" />}>
+          <Case002Experience />
+        </Suspense>
+      );
     } else {
-      page = <DynamicCaseHost slug={caseSlug} />;
+      page = <DynamicCaseHost slug={route.slug} />;
     }
+  } else if (route.kind === 'not-found') {
+    page = (
+      <Suspense fallback={<EnigmaLoader tone="dark" />}>
+        <NotFoundPage requestedPath={path} />
+      </Suspense>
+    );
   } else {
     page = <Home />;
   }
