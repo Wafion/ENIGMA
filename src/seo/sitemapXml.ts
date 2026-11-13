@@ -1,5 +1,11 @@
-import { getPublishedCaseManifests } from '../core/registry/caseRegistry';
+import { BLAIR_WITCH_MANIFEST } from '../cases/case-001-blair-witch/manifest';
+import { DB_COOPER_MANIFEST } from '../cases/case-002-db-cooper/manifest';
+import type { CaseManifest } from '../core/types/caseSchema';
 import { SITE_URL, SUPPORTING_SECTIONS } from './siteConfig';
+
+const PUBLISHED_MANIFESTS: CaseManifest[] = [BLAIR_WITCH_MANIFEST, DB_COOPER_MANIFEST].filter(
+  (m) => m.status === 'published',
+);
 
 export interface SitemapEntry {
   loc: string;
@@ -19,7 +25,7 @@ function escapeXml(value: string): string {
 
 export function getSitemapEntries(): SitemapEntry[] {
   const lastmod = '2026-11-13';
-  const cases = getPublishedCaseManifests();
+  const cases = PUBLISHED_MANIFESTS;
 
   const entries: SitemapEntry[] = [
     { loc: `${SITE_URL}/`, lastmod, changefreq: 'weekly', priority: '1.0' },

@@ -11,7 +11,8 @@
 /data/
 !src/data/
 /docs/
-/scripts/
+/scripts/*
+!/scripts/prerender-seo.ts
 /R&D/
 .env
 .env.local
