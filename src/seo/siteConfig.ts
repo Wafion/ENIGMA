@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://enigma.buzz';
+export const SITE_URL = 'https://www.enigma.buzz';
 export const SITE_NAME = 'ENIGMA';
 export const SITE_TAGLINE = 'Independent Documentary Platform for Unsolved Cases & Mysteries';
 export const SITE_DESCRIPTION =

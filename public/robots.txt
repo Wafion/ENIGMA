@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://enigma.buzz/sitemap.xml
+Sitemap: https://www.enigma.buzz/sitemap.xml

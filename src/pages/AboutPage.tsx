@@ -154,7 +154,7 @@ export function AboutPage() {
             <div>
               <p className="editorial-prose">
                 ENIGMA is produced as an independent editorial publication at{' '}
-                <a href="https://enigma.buzz/">enigma.buzz</a>. Corrections, primary-source additions, and archival
+                <a href="https://www.enigma.buzz/">www.enigma.buzz</a>. Corrections, primary-source additions, and archival
                 inquiries can be directed to <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>.
               </p>
               <p className="editorial-prose">
@@ -186,7 +186,7 @@ export function AboutPage() {
         </div>
         <div className="home-footer__bottom">
           <span>© 2026 ENIGMA</span>
-          <span>https://enigma.buzz/about</span>
+          <span>https://www.enigma.buzz/about</span>
         </div>
       </footer>
     </div>

@@ -40,17 +40,6 @@
   ],
   "redirects": [
     {
-      "source": "/:path(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.enigma.buzz"
-        }
-      ],
-      "destination": "https://enigma.buzz/:path",
-      "permanent": true
-    },
-    {
       "source": "/case/001",
       "destination": "/case/blair-witch",
       "permanent": true

@@ -315,7 +315,7 @@ export function CaseSupportingPage({ slug, section }: CaseSupportingPageProps) {
         </div>
         <div className="home-footer__bottom">
           <span>© 2026 ENIGMA</span>
-          <span>https://enigma.buzz/case/{dossier.slug}/{section}</span>
+          <span>https://www.enigma.buzz/case/{dossier.slug}/{section}</span>
         </div>
       </footer>
     </div>
