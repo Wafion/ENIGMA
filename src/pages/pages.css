@@ -110,6 +110,7 @@
   transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
 }
 
+.home a.editorial-btn--primary,
 .editorial-btn--primary {
   background: var(--home-ink);
   color: var(--home-black);
